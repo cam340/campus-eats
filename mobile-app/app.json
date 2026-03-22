@@ -1,0 +1,9 @@
+{
+  "expo": {
+    "name": "Campus Eats",
+    "slug": "campus-eats-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light"
+  }
+}
