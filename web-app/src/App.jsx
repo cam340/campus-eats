@@ -332,7 +332,7 @@ function StandardLandingPage({ onSelectRole }) {
                    Happiness <br/><span style={{ color: '#10B981' }}>delivered</span> to your dorm.
                  </h1>
                  <p style={{ fontSize: '1.35rem', color: '#D1FAE5', marginBottom: '3.5rem', lineHeight: 1.6, maxWidth: '500px', fontWeight: 500 }}>
-                   Enjoy quick and affordable deliveries from New cafeteria and Old cafeteria directly to your exact location. Designed by EMMA-PRAISE LIMITED.
+                   Enjoy quick and affordable deliveries from New cafeteria and Old cafeteria directly to your exact location on campus.
                  </p>
                  <div className="landing-hero-buttons" style={{ display: 'flex', gap: '1.5rem' }}>
                     <button className="chow-btn-primary" style={{ backgroundColor: '#10B981', color: '#004F32', fontSize: '1.25rem', padding: '1.25rem 2.5rem' }} onClick={() => onSelectRole('student')}>
