@@ -226,13 +226,20 @@ app.get('/api/admin/stats', async (req, res) => {
     });
 });
 
+// Health check
+app.get('/', (req, res) => {
+    res.json({ status: 'CampusEats Backend Online', timestamp: new Date().toISOString() });
+});
+
 // SOCKETS 
 io.on('connection', (socket) => {
     socket.on('join_chat', (requestId) => socket.join(`chat_${requestId}`));
 });
 
+const PORT = process.env.PORT || 3001;
+
 initDB().then(() => {
-    server.listen(3001, () => {
-        console.log('🚀 NATIVE CAMPUS-EATS BACKEND RUNNING ON PORT 3001 🚀');
+    server.listen(PORT, () => {
+        console.log(`🚀 CAMPUS-EATS BACKEND RUNNING ON PORT ${PORT} 🚀`);
     });
 }).catch(console.error);
