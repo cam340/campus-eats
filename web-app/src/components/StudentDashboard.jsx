@@ -144,14 +144,16 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                 </div>
                 <div className="student-header-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <div className="location-pill" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F3F4F6', padding: '0.5rem 1rem', borderRadius: '99px', fontSize: '1rem', fontWeight: 800 }}>
-                        🍽️ 
+                        📍 
                         <select 
-                            value={cafeteria} 
-                            onChange={(e) => setCafeteria(e.target.value)}
+                            value={locationId} 
+                            onChange={(e) => setLocationId(e.target.value)}
                             style={{ background: 'transparent', border: 'none', fontWeight: 800, color: '#111827', outline: 'none', cursor: 'pointer', appearance: 'none', paddingRight: '1rem' }}
                         >
-                            <option value="New Cafeteria">New Cafeteria</option>
-                            <option value="Old Cafeteria">Old Cafeteria</option>
+                            <option value="" disabled>Select Drop-off</option>
+                            {locations.map(loc => (
+                                <option key={loc.id} value={loc.id}>{loc.name}</option>
+                            ))}
                         </select>
                     </div>
                     <div style={{ position: 'relative' }}>
@@ -384,16 +386,14 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                     <form className="order-form" onSubmit={handleSubmit} style={{ background: 'white', padding: '2.5rem', borderRadius: '32px', boxShadow: '0 20px 40px -15px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.03)' }}>
                         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
                             <div style={{ flex: 1, minWidth: '200px' }}>
-                                <label style={{ display: 'block', fontWeight: 800, marginBottom: '0.75rem', color: '#111827' }}>Drop-off Zone</label>
+                                <label style={{ display: 'block', fontWeight: 800, marginBottom: '0.75rem', color: '#111827' }}>Select Caf</label>
                                 <select 
-                                    value={locationId} 
-                                    onChange={(e) => setLocationId(e.target.value)}
+                                    value={cafeteria} 
+                                    onChange={(e) => setCafeteria(e.target.value)}
                                     style={{ width: '100%', padding: '1rem 1.5rem', borderRadius: '16px', border: '2px solid #F3F4F6', background: '#F9FAFB', fontSize: '1.1rem', fontWeight: 700, outline: 'none', cursor: 'pointer' }}
                                 >
-                                    <option value="" disabled>Select Drop-off</option>
-                                    {locations.map(loc => (
-                                        <option key={loc.id} value={loc.id}>{loc.name}</option>
-                                    ))}
+                                    <option value="New Cafeteria">New Cafeteria</option>
+                                    <option value="Old Cafeteria">Old Cafeteria</option>
                                 </select>
                             </div>
                             <div style={{ flex: 1, minWidth: '200px' }}>
