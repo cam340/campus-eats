@@ -11,5 +11,4 @@ RUN npm install --build-from-source
 COPY . .
 
 EXPOSE 3001
-
-CMD ["npm", "start"]
+CMD ["node", "server.js"]

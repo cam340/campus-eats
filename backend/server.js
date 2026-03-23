@@ -314,13 +314,25 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3001;
 
-initDB().then(() => {
-    console.log("✅ DATABASE INITIALIZED SUCCESSFULLY");
-    server.listen(PORT, () => {
-        console.log(`🚀 CAMPUS-EATS BACKEND RUNNING ON PORT ${PORT} 🚀`);
-    });
-}).catch(err => {
-    console.error("❌ CRITICAL ERROR DURING STARTUP:");
-    console.error(err);
-    process.exit(1);
+// Middleware to ensure DB is initialized before processing requests
+app.use((req, res, next) => {
+    if (!db && req.path !== '/') {
+        return res.status(503).json({ error: "Database initializing. Please try again in a few seconds." });
+    }
+    next();
 });
+
+// Start server IMMEDIATELY so Render's health check passes
+server.listen(PORT, () => {
+    console.log(`🚀 CAMPUS-EATS BACKEND LISTENING ON PORT ${PORT} 🚀`);
+    console.log("🛠️  INITIALIZING DATABASE...");
+    
+    initDB().then(() => {
+        console.log("✅ DATABASE INITIALIZED SUCCESSFULLY");
+    }).catch(err => {
+        console.error("❌ CRITICAL ERROR DURING DATABASE INIT:");
+        console.error(err);
+        // We don't exit here so we can still see the logs via the health check endpoint
+    });
+});
+
