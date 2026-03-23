@@ -193,7 +193,7 @@ const GlobalStyles = () => (
       flex-direction: column;
     }
 
-    /* ===== MOBILE RESPONSIVE ===== */
+    /* ===== MOBILE RESPONSIVE OVERRIDES ===== */
     @media (max-width: 900px) {
       .landing-hero-row {
         flex-direction: column !important;
@@ -201,8 +201,8 @@ const GlobalStyles = () => (
         text-align: center;
       }
       .landing-hero-text h1 {
-        font-size: 3rem !important;
-        letter-spacing: -1.5px !important;
+        font-size: 2.75rem !important;
+        letter-spacing: -1px !important;
       }
       .landing-hero-text p {
         font-size: 1.1rem !important;
@@ -211,26 +211,20 @@ const GlobalStyles = () => (
       }
       .landing-hero-buttons {
         justify-content: center !important;
-        flex-wrap: wrap;
+        flex-direction: column;
+        width: 100%;
+      }
+      .chow-btn-primary, .chow-btn-secondary {
+        width: 100% !important;
+        padding: 1.25rem !important;
       }
       .landing-hero-image {
         max-width: 100% !important;
       }
       .landing-hero-image img {
-        height: 300px !important;
+        height: 350px !important;
       }
-      .floating-emoji {
-        font-size: 2.5rem !important;
-      }
-      .how-it-works-grid {
-        grid-template-columns: 1fr !important;
-      }
-      .cta-heading {
-        font-size: 2.5rem !important;
-      }
-      .landing-nav-links {
-        display: none !important;
-      }
+      
       .dashboard-layout {
         flex-direction: column;
       }
@@ -238,18 +232,41 @@ const GlobalStyles = () => (
         width: 100% !important;
         border-right: none;
         border-bottom: 1px solid #E5E7EB;
-        padding: 1.5rem;
+        padding: 1.25rem !important;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255,255,255,0.8);
+        backdrop-filter: blur(10px);
+      }
+      .sidebar-title {
+        font-size: 1.5rem !important;
       }
       .sidebar-nav {
         flex-direction: row !important;
-        margin-top: 1rem;
-        gap: 0.5rem;
+        margin-top: 1rem !important;
+        gap: 0.5rem !important;
         overflow-x: auto;
+        padding-bottom: 0.5rem;
       }
       .nav-btn {
+        padding: 0.75rem 1rem !important;
+        font-size: 0.9rem !important;
         white-space: nowrap;
-        padding: 0.75rem 1rem;
-        font-size: 0.95rem;
+      }
+      .main-area {
+        padding: 1.5rem 1rem !important;
+      }
+
+      .chat-floating {
+        bottom: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+      }
+      .profile-view-container {
+        padding: 1.5rem 1rem !important;
       }
       .student-main-flex {
         flex-direction: column !important;
@@ -266,12 +283,8 @@ const GlobalStyles = () => (
       .rider-grid {
         grid-template-columns: 1fr !important;
       }
-      .chat-floating {
-        width: calc(100% - 2rem) !important;
-        left: 1rem !important;
-        right: 1rem !important;
-      }
     }
+
 
     @media (max-width: 480px) {
       .landing-hero-text h1 {
@@ -498,10 +511,17 @@ export default function App() {
   if (activeUserRole === 'student') {
     return (
       <ToastProvider>
-        <div style={{ position: 'relative', minHeight: '100vh', background: '#F9FAFB' }}>
+        <div style={{ 
+          position: 'relative', 
+          minHeight: '100vh', 
+          background: '#F9FAFB',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: activeTab === 'profile' ? 'center' : 'flex-start'
+        }}>
           <GlobalStyles />
           {activeTab === 'profile' ? (
-            <div style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem 1.5rem' }}>
+            <div className="profile-view-container" style={{ maxWidth: '800px', width: '100%', margin: '0 auto', padding: '2rem 1.5rem' }}>
               <Profile userId={activeUserId} role="student" onClose={() => setActiveTab('main')} />
             </div>
           ) : (

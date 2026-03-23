@@ -126,7 +126,7 @@ export default function UsersManager() {
       </h2>
       <p style={{ color: '#64748b', marginBottom: '20px', fontSize: '14px' }}>Click on any user row to view their full profile and verification documents.</p>
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table style={{ width: '100%', minWidth: '700px', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#f8fafc', color: '#64748b', textAlign: 'left', borderBottom: '2px solid #e2e8f0' }}>
               <th style={{ padding: '12px' }}>Name</th>

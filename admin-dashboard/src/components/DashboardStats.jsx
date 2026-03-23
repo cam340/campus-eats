@@ -29,7 +29,7 @@ export default function DashboardStats() {
   return (
     <div>
       <h2 style={{ fontSize: '2rem', color: '#0f172a', margin: '0 0 3rem' }}>Live Analytics overview</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '2rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem' }}>
         <StatCard title="Total Active Requests" value={stats.requests} subtitle="Currently in queue" />
         <StatCard title="Active Riders Delivery" value={stats.deliveries} subtitle="Across all cafeterias" />
         <StatCard title="Peak Delivery Zone" value={stats.topZone} subtitle="Based on all-time orders" />

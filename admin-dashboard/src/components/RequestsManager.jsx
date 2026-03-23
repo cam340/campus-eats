@@ -28,14 +28,15 @@ export default function RequestsManager() {
       <h2 style={{ fontSize: '2rem', color: '#0f172a', margin: '0 0 0.5rem' }}>Active Requests</h2>
       <p style={{ color: '#64748b', marginBottom: '3rem' }}>Monitor all ongoing deliveries and Favor Points transactions.</p>
       
-      <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: 'white', borderRadius: '0.75rem', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+      <div style={{ overflowX: 'auto', background: 'white', borderRadius: '0.75rem', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <table style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse' }}>
         <thead style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
           <tr>
             <th style={thStyle}>Date</th>
-            <th style={thStyle}>Student ID</th>
-            <th style={thStyle}>Drop-off Location</th>
+            <th style={thStyle}>Cafeteria</th>
             <th style={thStyle}>Details</th>
-            <th style={thStyle}>Favor Points</th>
+            <th style={thStyle}>Est. Price</th>
+            <th style={thStyle}>Budget</th>
             <th style={thStyle}>Status</th>
           </tr>
         </thead>
@@ -45,10 +46,10 @@ export default function RequestsManager() {
               <td style={tdStyle}>
                   {new Date(req.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
               </td>
-              <td style={tdStyle}>{req.student_id ? req.student_id.substring(0,8) : 'Unknown'}</td>
-              <td style={tdStyle}>{req.delivery_locations ? req.delivery_locations.name : 'Unknown'}</td>
+              <td style={tdStyle}>{req.cafeteria || 'N/A'}</td>
               <td style={tdStyle}>{req.request_text}</td>
-              <td style={tdStyle}><strong>{req.budget_range}</strong></td>
+              <td style={tdStyle}>₦{(req.estimated_price || 0).toLocaleString()}</td>
+              <td style={tdStyle}><strong>{req.budget_range?.replace('$', '₦')}</strong></td>
               <td style={tdStyle}>
                 <span style={badgeStyle(req.status)}>{req.status.replace('_', ' ').toUpperCase()}</span>
               </td>
@@ -59,6 +60,7 @@ export default function RequestsManager() {
           )}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

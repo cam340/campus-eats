@@ -153,6 +153,8 @@ async function initDB() {
             student_id TEXT,
             delivery_location_id INTEGER,
             request_text TEXT,
+            cafeteria TEXT,
+            estimated_price REAL DEFAULT 0,
             budget_range TEXT,
             status TEXT,
             rider_id TEXT,
@@ -170,16 +172,14 @@ async function initDB() {
     // Insert hardcoded locations if empty
     const locs = await db.all("SELECT * FROM delivery_locations");
     if (locs.length === 0) {
-        await db.run("INSERT INTO delivery_locations (name, description, fee) VALUES ('Joseph Hall', 'Male Undergraduate Hostel', 1.50), ('Levi Hall', 'Male Undergraduate Hostel', 1.50), ('Esme Hall', 'Female Undergraduate Hostel', 2.00), ('Babcock Library', 'Central Study Area', 0.50)");
+        await db.run("INSERT INTO delivery_locations (name, description, fee) VALUES ('Joseph Hall', 'Male Undergraduate Hostel', 500), ('Levi Hall', 'Male Undergraduate Hostel', 500), ('Esme Hall', 'Female Undergraduate Hostel', 700), ('Babcock Library', 'Central Study Area', 300)");
     }
 
-    // MIGRATION: Add id_card_photo and selfie_photo if they don't exist
-    try {
-        await db.run("ALTER TABLE users ADD COLUMN id_card_photo TEXT");
-    } catch(e) {}
-    try {
-        await db.run("ALTER TABLE users ADD COLUMN selfie_photo TEXT");
-    } catch(e) {}
+    // MIGRATION: Add new columns if they don't exist
+    try { await db.run("ALTER TABLE users ADD COLUMN id_card_photo TEXT"); } catch(e) {}
+    try { await db.run("ALTER TABLE users ADD COLUMN selfie_photo TEXT"); } catch(e) {}
+    try { await db.run("ALTER TABLE requests ADD COLUMN cafeteria TEXT"); } catch(e) {}
+    try { await db.run("ALTER TABLE requests ADD COLUMN estimated_price REAL DEFAULT 0"); } catch(e) {}
 
     // SEED DEFAULT ADMIN
     await db.run(`INSERT OR IGNORE INTO users (id, email, password, name, full_name, role) 
@@ -284,11 +284,11 @@ app.get('/api/requests/available', async (req, res) => {
 
 // Create Request
 app.post('/api/requests', async (req, res) => {
-    const { student_id, delivery_location_id, request_text, budget_range } = req.body;
+    const { student_id, delivery_location_id, request_text, budget_range, cafeteria, estimated_price } = req.body;
     const id = 'req_' + Date.now();
-    await db.run(`INSERT INTO requests (id, student_id, delivery_location_id, request_text, budget_range, status)
-                  VALUES (?, ?, ?, ?, ?, 'request_sent')`, 
-                  [id, student_id, delivery_location_id, request_text, budget_range]);
+    await db.run(`INSERT INTO requests (id, student_id, delivery_location_id, request_text, cafeteria, estimated_price, budget_range, status)
+                  VALUES (?, ?, ?, ?, ?, ?, ?, 'request_sent')`, 
+                  [id, student_id, delivery_location_id, request_text, cafeteria, estimated_price || 0, budget_range]);
     
     const newReq = await getPopulatedRequest(id);
     io.emit('new_request', newReq); // Global broadcast to riders

@@ -110,26 +110,39 @@ export default function RiderDashboard({ userId, onOpenChat }) {
         const { label } = getNextStatusInfo();
         return (
             <div style={{ animation: 'slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
+                <style>
+                    {`
+                    @media (max-width: 600px) {
+                        .active-delivery-card { padding: 1.5rem !important; border-radius: 24px !important; }
+                        .active-delivery-title { font-size: 2rem !important; }
+                        .mission-details { padding: 1.5rem !important; }
+                        .mission-text { font-size: 1.25rem !important; }
+                        .action-btn { font-size: 1.1rem !important; padding: 1.25rem !important; }
+                        .queue-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+                        .queue-card { padding: 1.5rem !important; }
+                    }
+                    `}
+                </style>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
                     <div>
                         <p style={{ margin: '0 0 0.5rem', color: '#10B981', fontWeight: 800, fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Current Mission</p>
-                        <h2 style={{ fontSize: '3rem', color: '#111827', margin: 0, fontWeight: 900, letterSpacing: '-1px' }}>Active Delivery</h2>
+                        <h2 className="active-delivery-title" style={{ fontSize: '3rem', color: '#111827', margin: 0, fontWeight: 900, letterSpacing: '-1px' }}>Active Delivery</h2>
                     </div>
                 </div>
                 
-                <div style={{ background: 'white', padding: '3.5rem', borderRadius: '40px', boxShadow: '0 30px 60px -15px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.03)' }}>
+                <div className="active-delivery-card" style={{ background: 'white', padding: '3.5rem', borderRadius: '40px', boxShadow: '0 30px 60px -15px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.03)' }}>
                     <Stepper currentStatus={activeDelivery.status} />
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
-                        <h3 style={{ margin: 0, color: '#6B7280', fontSize: '1.25rem', fontWeight: 600 }}>Order ID: <span style={{ color: '#111827' }}>{activeDelivery.id.substring(4,10)}</span></h3>
+                        <h3 style={{ margin: 0, color: '#6B7280', fontSize: '1.25rem', fontWeight: 600 }}>ID: <span style={{ color: '#111827' }}>{activeDelivery.id.substring(4,10)}</span></h3>
                         <div style={{ background: '#F9FAFB', color: '#111827', padding: '0.75rem 1.5rem', borderRadius: '99px', fontSize: '1rem', fontWeight: 800 }}>
                             {activeDelivery.budget_range || 'Standard'}
                         </div>
                     </div>
 
-                    <div style={{ padding: '2.5rem', background: '#F9FAFB', borderRadius: '24px', border: '1px solid #E5E7EB', marginBottom: '2.5rem' }}>
+                    <div className="mission-details" style={{ padding: '2.5rem', background: '#F9FAFB', borderRadius: '24px', border: '1px solid #E5E7EB', marginBottom: '2.5rem' }}>
                         <p style={{ margin: '0 0 0.5rem', color: '#6B7280', fontSize: '1rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Pickup Request</p>
-                        <p style={{ margin: '0', color: '#111827', fontSize: '1.75rem', fontWeight: 800, lineHeight: 1.4 }}>{activeDelivery.request_text}</p>
+                        <p className="mission-text" style={{ margin: '0', color: '#111827', fontSize: '1.75rem', fontWeight: 800, lineHeight: 1.4 }}>{activeDelivery.request_text}</p>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', marginBottom: '3rem' }}>
@@ -183,7 +196,7 @@ export default function RiderDashboard({ userId, onOpenChat }) {
                 </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '2.5rem' }}>
+            <div className="queue-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '2.5rem' }}>
                 {available.length === 0 ? (
                     <div style={{ background: 'white', padding: '6rem', borderRadius: '40px', textAlign: 'center', gridColumn: '1 / -1', border: '2px dashed #E5E7EB' }}>
                         <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>😴</div>
@@ -192,13 +205,18 @@ export default function RiderDashboard({ userId, onOpenChat }) {
                     </div>
                 ) : (
                     available.map(item => (
-                        <div key={item.id} style={{ background: 'white', padding: '3rem', borderRadius: '32px', boxShadow: '0 20px 40px -15px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.02)', transition: 'transform 0.3s, box-shadow 0.3s', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} onMouseOver={(e) => {e.currentTarget.style.transform='translateY(-8px)'; e.currentTarget.style.boxShadow='0 30px 60px -15px rgba(0,0,0,0.1)'}} onMouseOut={(e) => {e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='0 20px 40px -15px rgba(0,0,0,0.05)'}}>
+                        <div className="queue-card" key={item.id} style={{ background: 'white', padding: '3rem', borderRadius: '32px', boxShadow: '0 20px 40px -15px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.02)', transition: 'transform 0.3s, box-shadow 0.3s', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} onMouseOver={(e) => {e.currentTarget.style.transform='translateY(-8px)'; e.currentTarget.style.boxShadow='0 30px 60px -15px rgba(0,0,0,0.1)'}} onMouseOut={(e) => {e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='0 20px 40px -15px rgba(0,0,0,0.05)'}}>
                             <div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                                     <span style={{ background: '#F3F4F6', color: '#4B5563', padding: '0.5rem 1rem', borderRadius: '99px', fontSize: '0.9rem', fontWeight: 800 }}>ID: {item.id.substring(4,10)}</span>
-                                    <span style={{ color: '#004F32', fontWeight: 900, fontSize: '1.25rem', background: '#E6F5ED', padding: '0.5rem 1rem', borderRadius: '99px' }}>{item.budget_range || '$$'}</span>
+                                    <span style={{ color: '#004F32', fontWeight: 900, fontSize: '1.25rem', background: '#E6F5ED', padding: '0.5rem 1rem', borderRadius: '99px' }}>{item.budget_range?.replace('$', '₦') || '₦₦'}</span>
                                 </div>
+                                <p style={{ margin: '0 0 0.5rem', color: '#10B981', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase' }}>{item.cafeteria || 'Cafeteria'}</p>
                                 <h3 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#111827', margin: '0 0 1.5rem', lineHeight: 1.3, letterSpacing: '-0.5px' }}>{item.request_text}</h3>
+                                <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F3F4F6', paddingBottom: '1rem' }}>
+                                     <span style={{ color: '#6B7280', fontWeight: 600 }}>Food Value:</span>
+                                     <span style={{ color: '#111827', fontWeight: 800 }}>₦{(item.estimated_price || 0).toLocaleString()}</span>
+                                </div>
                                 <p style={{ margin: '0 0 3rem', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '0.75rem', fontWeight: 600, fontSize: '1.1rem' }}>
                                     <span style={{ fontSize: '1.5rem' }}>📍</span> <span style={{ color: '#111827' }}>{item.delivery_location_name || 'Unknown'}</span>
                                 </p>

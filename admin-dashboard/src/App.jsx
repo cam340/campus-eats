@@ -193,6 +193,64 @@ const GlobalStyles = () => (
       background: #f8fafc;
       overflow-y: auto;
     }
+
+    @media (max-width: 900px) {
+      .dashboard-layout {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100% !important;
+        padding: 1.5rem !important;
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+      }
+      .sidebar-title {
+        font-size: 1.25rem !important;
+      }
+      .sidebar-nav {
+        display: none !important; /* Hide full nav, maybe use a burger menu if complex, but for now we'll just simplify or stack */
+      }
+      .main-area {
+        padding: 1.5rem !important;
+      }
+      .mobile-admin-nav {
+        display: flex !important;
+        background: white;
+        padding: 0.75rem;
+        gap: 0.5rem;
+        overflow-x: auto;
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 70px; /* height of sidebar */
+        z-index: 90;
+      }
+      .mobile-nav-btn {
+        padding: 0.6rem 1rem;
+        border-radius: 99px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        white-space: nowrap;
+        border: 1px solid #e2e8f0;
+        background: white;
+        color: #64748b;
+      }
+      .mobile-nav-btn.active {
+        background: #059669;
+        color: white;
+        border-color: #059669;
+      }
+    }
+    @media (min-width: 901px) {
+      .mobile-admin-nav { display: none !important; }
+    }
+
   `}</style>
 );
 
@@ -295,49 +353,50 @@ export default function App() {
     <ToastProvider>
       <div className="dashboard-layout">
         <GlobalStyles />
-        <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column' }}>
+        <aside className="sidebar">
           <h2 className="sidebar-title" style={{ cursor: 'pointer' }} onClick={() => setActiveTab('stats')}>
             Campus<span>Eats</span>
           </h2>
           <nav className="sidebar-nav" style={{ flex: 1 }}>
-            <button 
-              onClick={() => setActiveTab('stats')} 
-              className={`nav-btn ${activeTab === 'stats' ? 'active' : ''}`}
-            >
-              Analytics Dashboard
-            </button>
-            <button 
-              onClick={() => setActiveTab('locations')} 
-              className={`nav-btn ${activeTab === 'locations' ? 'active' : ''}`}
-            >
-              Delivery Locations
-            </button>
-            <button 
-              onClick={() => setActiveTab('users')} 
-              className={`nav-btn ${activeTab === 'users' ? 'active' : ''}`}
-            >
-              User Verification
-            </button>
-            <button 
-              onClick={() => setActiveTab('requests')} 
-              className={`nav-btn ${activeTab === 'requests' ? 'active' : ''}`}
-            >
-              Live Requests Queue
-            </button>
+            <button onClick={() => setActiveTab('stats')} className={`nav-btn ${activeTab === 'stats' ? 'active' : ''}`}>Analytics Dashboard</button>
+            <button onClick={() => setActiveTab('locations')} className={`nav-btn ${activeTab === 'locations' ? 'active' : ''}`}>Delivery Locations</button>
+            <button onClick={() => setActiveTab('users')} className={`nav-btn ${activeTab === 'users' ? 'active' : ''}`}>User Verification</button>
+            <button onClick={() => setActiveTab('requests')} className={`nav-btn ${activeTab === 'requests' ? 'active' : ''}`}>Live Requests Queue</button>
             <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
               <button 
                 onClick={() => setActiveTab('profile')} 
                 className={`nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
                 style={{ width: '100%' }}
               >
-                👤 My Profile
+                👤 Profile
               </button>
             </div>
           </nav>
-          <button onClick={logout} className="nav-btn" style={{ marginTop: 'auto', background: 'rgba(0,0,0,0.2)' }}>
+          <button onClick={logout} className="logout-desktop-btn nav-btn" style={{ marginTop: 'auto', background: 'rgba(0,0,0,0.2)' }}>
             Log Out
           </button>
+          
+          {/* Mobile Logout (only shows in sidebar top-right flex on mobile) */}
+          <button onClick={logout} className="logout-mobile-btn" style={{ display: 'none', background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.8rem', fontWeight: 800 }}>
+             Exit
+          </button>
+          <style>{`
+            @media (max-width: 900px) {
+              .logout-desktop-btn { display: none !important; }
+              .logout-mobile-btn { display: block !important; }
+            }
+          `}</style>
         </aside>
+
+        {/* Horizontal Nav for Mobile */}
+        <div className="mobile-admin-nav">
+          <button onClick={() => setActiveTab('stats')} className={`mobile-nav-btn ${activeTab === 'stats' ? 'active' : ''}`}>Stats</button>
+          <button onClick={() => setActiveTab('locations')} className={`mobile-nav-btn ${activeTab === 'locations' ? 'active' : ''}`}>Locations</button>
+          <button onClick={() => setActiveTab('users')} className={`mobile-nav-btn ${activeTab === 'users' ? 'active' : ''}`}>Users</button>
+          <button onClick={() => setActiveTab('requests')} className={`mobile-nav-btn ${activeTab === 'requests' ? 'active' : ''}`}>Orders</button>
+          <button onClick={() => setActiveTab('profile')} className={`mobile-nav-btn ${activeTab === 'profile' ? 'active' : ''}`}>Profile</button>
+        </div>
+
         <main className="main-area">
           {activeTab === 'stats' && <DashboardStats />}
           {activeTab === 'locations' && <LocationManager />}

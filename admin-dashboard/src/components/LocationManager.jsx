@@ -45,7 +45,19 @@ export default function LocationManager() {
 
   return (
     <div style={{ position: 'relative' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+        <style>
+            {`
+            @media (max-width: 600px) {
+                .location-header { flex-direction: column !important; align-items: stretch !important; gap: 1.5rem !important; }
+                .location-header h2 { font-size: 1.75rem !important; }
+                .location-card-inner { flex-direction: column !important; align-items: stretch !important; gap: 1.5rem !important; }
+                .location-card { padding: 1.5rem !important; border-radius: 20px !important; }
+                .add-modal-form { padding: 1.5rem !important; border-radius: 1.5rem !important; width: 95% !important; margin: 10px !important; }
+                .add-modal-form h3 { font-size: 1.5rem !important; margin-bottom: 1.5rem !important; }
+            }
+            `}
+        </style>
+      <div className="location-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
         <div>
           <h2 style={{ fontSize: '2.5rem', color: '#0f172a', margin: '0 0 0.5rem', fontWeight: 900 }}>Delivery Locations</h2>
           <p style={{ color: '#64748b', margin: 0, fontSize: '1.1rem' }}>Configure exactly where riders are allowed to deliver on campus.</p>
@@ -59,8 +71,8 @@ export default function LocationManager() {
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         {locations.map(loc => (
-          <div key={loc.id} style={{ background: 'white', padding: '2rem', border: '1px solid #e2e8f0', borderRadius: '1.5rem', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', transition: 'transform 0.2s' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div key={loc.id} className="location-card" style={{ background: 'white', padding: '2rem', border: '1px solid #e2e8f0', borderRadius: '1.5rem', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', transition: 'transform 0.2s' }}>
+            <div className="location-card-inner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.5rem', fontWeight: 800, color: '#1e293b' }}>{loc.name}</h3>
                 <p style={{ margin: 0, color: '#64748b', fontSize: '1rem' }}>{loc.description || 'No description provided'}</p>
@@ -91,8 +103,8 @@ export default function LocationManager() {
       </div>
 
       {showModal && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-            <form onSubmit={handleAddLocation} style={{ background: 'white', padding: '3rem', borderRadius: '2rem', width: '100%', maxWidth: '500px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', animation: 'slideUpFade 0.3s ease-out' }}>
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '1rem' }}>
+            <form onSubmit={handleAddLocation} className="add-modal-form" style={{ background: 'white', padding: '3rem', borderRadius: '2rem', width: '100%', maxWidth: '500px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', animation: 'slideUpFade 0.3s ease-out' }}>
                 <h3 style={{ fontSize: '1.75rem', fontWeight: 900, marginBottom: '2rem', color: '#0f172a' }}>Add Delivery Zone</h3>
                 
                 <div style={{ marginBottom: '1.5rem' }}>
@@ -101,8 +113,8 @@ export default function LocationManager() {
                 </div>
 
                 <div style={{ marginBottom: '1.5rem' }}>
-                    <label style={{ display: 'block', fontWeight: 800, marginBottom: '0.5rem', fontSize: '0.9rem', textTransform: 'uppercase', color: '#64748b' }}>Delivery Fee ($)</label>
-                    <input type="number" step="0.01" required value={newLoc.fee} onChange={e => setNewLoc({...newLoc, fee: e.target.value})} placeholder="e.g. 5.00" style={inputStyle} />
+                    <label style={{ display: 'block', fontWeight: 800, marginBottom: '0.5rem', fontSize: '0.9rem', textTransform: 'uppercase', color: '#64748b' }}>Delivery Fee (₦)</label>
+                    <input type="number" step="0.01" required value={newLoc.fee} onChange={e => setNewLoc({...newLoc, fee: e.target.value})} placeholder="e.g. 500" style={inputStyle} />
                 </div>
 
                 <div style={{ marginBottom: '2rem' }}>

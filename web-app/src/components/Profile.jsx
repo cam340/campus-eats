@@ -82,9 +82,24 @@ export default function Profile({ userId, role, onClose }) {
     );
 
     return (
-        <div style={{ animation: 'slideUpFade 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
+        <div className="profile-container" style={{ animation: 'slideUpFade 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
+            <style>
+                {`
+                @media (max-width: 600px) {
+                    .profile-header { flex-direction: column-reverse !important; align-items: stretch !important; gap: 1rem !important; }
+                    .profile-header h2 { font-size: 1.75rem !important; }
+                    .profile-avatar-card { flex-direction: column !important; padding: 1.5rem !important; text-align: center !important; }
+                    .profile-avatar-card .avatar-circle { margin: 0 auto !important; }
+                    .profile-fields-card { padding: 1.5rem !important; }
+                    .profile-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
+                    .doc-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+                    .profile-actions { flex-direction: column !important; }
+                    .profile-actions button { width: 100% !important; }
+                }
+                `}
+            </style>
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' }}>
+            <div className="profile-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2.5rem' }}>
                 <div>
                     <p style={{ margin: '0 0 0.5rem', color: '#10B981', fontWeight: 800, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
                         {role === 'rider' ? '🛵 Rider Profile' : '🎓 Student Profile'}
@@ -97,18 +112,19 @@ export default function Profile({ userId, role, onClose }) {
                     <button onClick={onClose} style={{
                         background: '#F3F4F6', border: 'none', borderRadius: '50%',
                         width: '48px', height: '48px', fontSize: '1.25rem', cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800,
+                        alignSelf: 'flex-end'
                     }}>✕</button>
                 )}
             </div>
 
             {/* Avatar */}
-            <div style={{
+            <div className="profile-avatar-card" style={{
                 display: 'flex', alignItems: 'center', gap: '1.5rem',
                 padding: '2rem', background: 'linear-gradient(135deg, #E6F5ED, #F0FDF4)',
                 borderRadius: '24px', marginBottom: '2.5rem'
             }}>
-                <div style={{
+                <div className="avatar-circle" style={{
                     width: '80px', height: '80px', borderRadius: '50%',
                     background: role === 'rider' ? '#10B981' : '#004F32',
                     color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -127,24 +143,25 @@ export default function Profile({ userId, role, onClose }) {
                         fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px',
                         background: role === 'rider' ? '#10B981' : '#004F32', color: 'white'
                     }}>
-                        {role}
+                        {role === 'rider' ? 'Rider' : 'Student'}
                     </span>
                 </div>
             </div>
 
+
             {/* Fields */}
-            <div style={{
+            <div className="profile-fields-card" style={{
                 background: 'white', padding: '2.5rem', borderRadius: '24px',
                 border: '1px solid #E5E7EB', boxShadow: '0 10px 25px -10px rgba(0,0,0,0.05)'
             }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 2rem' }}>
+                <div className="profile-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 2rem' }}>
                     <Field label="Full Name" field="full_name" />
                     <Field label="Phone Number" field="phone_number" type="tel" />
                     <Field label="Hostel Name" field="hostel_name" />
                     <Field label="Room Number" field="room_number" />
                 </div>
 
-                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                <div className="profile-actions" style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
                     {editing ? (
                         <>
                             <button onClick={handleSave} disabled={saving} style={{
@@ -188,7 +205,7 @@ export default function Profile({ userId, role, onClose }) {
                         Our team will verify these within 24 hours.
                     </p>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                    <div className="doc-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
                         <DocUpload 
                             label="Student ID Card" 
                             field="id_card_photo" 
