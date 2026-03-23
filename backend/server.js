@@ -5,7 +5,7 @@ const { open } = require('sqlite');
 const { Server } = require('socket.io');
 const http = require('http');
 
-const { createClient } = require('@libsql/client/web');
+// (Unified fetch-based Turso client enabled)
 
 const app = express();
 app.use(cors());
@@ -24,32 +24,65 @@ let db;
 
 // Turso/SQLite Compatibility Wrapper
 class Database {
-    constructor(client, isLibsql = false) {
-        this.client = client;
+    constructor(isLibsql = false, url = null, authToken = null, localDb = null) {
         this.isLibsql = isLibsql;
+        this.url = url;
+        this.authToken = authToken;
+        this.localDb = localDb;
+    }
+
+    async executeTurso(sql, params = []) {
+        const response = await fetch(`${this.url}/v1/execute`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${this.authToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                stmt: { sql, args: params.map(p => this.formatParam(p)) }
+            })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || JSON.stringify(data));
+        return data.result;
+    }
+
+    formatParam(p) {
+        if (typeof p === 'boolean') return p ? 1 : 0;
+        return p;
     }
 
     async get(sql, params = []) {
         if (this.isLibsql) {
-            const res = await this.client.execute({ sql, args: params });
-            return res.rows[0];
+            const res = await this.executeTurso(sql, params);
+            // res.rows is [ [val1, val2], ... ]
+            // res.cols is [ {name: 'id'}, ... ]
+            if (!res.rows || res.rows.length === 0) return null;
+            const obj = {};
+            res.cols.forEach((col, i) => obj[col.name] = res.rows[0][i]);
+            return obj;
         }
-        return await this.client.get(sql, params);
+        return await this.localDb.get(sql, params);
     }
 
     async all(sql, params = []) {
         if (this.isLibsql) {
-            const res = await this.client.execute({ sql, args: params });
-            return res.rows;
+            const res = await this.executeTurso(sql, params);
+            if (!res.rows) return [];
+            return res.rows.map(row => {
+                const obj = {};
+                res.cols.forEach((col, i) => obj[col.name] = row[i]);
+                return obj;
+            });
         }
-        return await this.client.all(sql, params);
+        return await this.localDb.all(sql, params);
     }
 
     async run(sql, params = []) {
         if (this.isLibsql) {
-            return await this.client.execute({ sql, args: params });
+            return await this.executeTurso(sql, params);
         }
-        return await this.client.run(sql, params);
+        return await this.localDb.run(sql, params);
     }
 
     async exec(sql) {
@@ -57,11 +90,11 @@ class Database {
             const statements = sql.split(';').map(s => s.trim()).filter(s => s.length > 0);
             for (const s of statements) {
                 console.log("Executing SQL:", s.substring(0, 50) + "...");
-                await this.client.execute(s);
+                await this.executeTurso(s);
             }
             return;
         }
-        return await this.client.exec(sql);
+        return await this.localDb.exec(sql);
     }
 }
 
@@ -70,16 +103,17 @@ async function initDB() {
     const authToken = process.env.TURSO_AUTH_TOKEN;
 
     if (url) {
-        // Normalize URL if needed
         url = url.trim().replace(/\/$/, ""); 
-        // Force HTTPS if it's a Turso URL but using libsql prototcol (libsql client handles this internally usually)
-        console.log(`☁️  CONNECTING TO TURSO CLOUD SQLITE: ${url.split('@')[0]}...`);
-        const client = createClient({ url, authToken });
-        db = new Database(client, true);
+        // Force HTTPS for fetch client
+        if (url.startsWith("libsql://")) {
+            url = url.replace("libsql://", "https://");
+        }
+        console.log(`☁️  CONNECTING TO TURSO (FETCH-MODE): ${url}...`);
+        db = new Database(true, url, authToken);
     } else {
         console.log("📁 USING LOCAL SQLITE...");
         const localDb = await open({ filename: './database.sqlite', driver: sqlite3.Database });
-        db = new Database(localDb, false);
+        db = new Database(false, null, null, localDb);
     }
 
     await db.exec(`
