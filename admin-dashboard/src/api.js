@@ -32,6 +32,7 @@ export const api = {
     updateUser: (id, preferences) => client(`admin/users/${id}`, { method: 'PATCH', body: { preferences } }),
     getLocations: () => client('admin/locations'),
     updateLocation: (id, is_active) => client(`admin/locations/${id}`, { method: 'PATCH', body: { is_active } }),
+    createLocation: (data) => client('admin/locations', { method: 'POST', body: data }),
     getRequests: () => client('admin/requests'),
   },
   profile: {

@@ -176,12 +176,17 @@ app.post('/api/auth/signup', async (req, res) => {
         const id = Date.now().toString() + Math.random().toString(36).substring(7);
         const userRole = role || 'student'; // Fallback to student
         
-        await db.run(`INSERT INTO users (id, email, password, name, full_name, role, phone_number, hostel_name, room_number)
-                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-                      [id, email, password, full_name, full_name, userRole, phone_number, hostel_name, room_number]);
+        // Default preferences: Riders are pending review, Students are auto-verified (optional) or just unverified
+        const initialPrefs = userRole === 'rider' 
+            ? JSON.stringify({ is_verified: false, verification_status: 'pending' })
+            : JSON.stringify({ is_verified: false, verification_status: 'none' });
+
+        await db.run(`INSERT INTO users (id, email, password, name, full_name, role, phone_number, hostel_name, room_number, preferences)
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+                      [id, email, password, full_name, full_name, userRole, phone_number, hostel_name, room_number, initialPrefs]);
         
         console.log("Signup success:", email, "Role:", userRole);
-        res.status(201).json({ id, email, name: full_name, full_name, role: userRole });
+        res.status(201).json({ id, email, name: full_name, full_name, role: userRole, preferences: initialPrefs });
     } catch(err) {
         console.error("Signup error:", err);
         if(err.message && err.message.includes('UNIQUE constraint failed')) {
@@ -310,9 +315,25 @@ app.get('/api/admin/users', async (req, res) => {
 });
 
 app.patch('/api/admin/users/:id', async (req, res) => {
-    const { preferences } = req.body;
-    await db.run(`UPDATE users SET preferences = ? WHERE id = ?`, [preferences, req.params.id]);
-    res.json({ success: true });
+    try {
+        const { preferences } = req.body;
+        // preferences is likely a string from the frontend JSON.stringify
+        await db.run(`UPDATE users SET preferences = ? WHERE id = ?`, [preferences, req.params.id]);
+        res.json({ success: true });
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/admin/locations', async (req, res) => {
+    try {
+        const { name, fee, description } = req.body;
+        await db.run(`INSERT INTO delivery_locations (name, fee, description, is_active) VALUES (?, ?, ?, 1)`,
+                     [name, fee || 0, description || '']);
+        res.json({ success: true });
+    } catch(err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.get('/api/admin/requests', async (req, res) => {

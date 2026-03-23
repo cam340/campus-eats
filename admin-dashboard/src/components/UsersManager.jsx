@@ -83,26 +83,31 @@ export default function UsersManager() {
                   {selectedUser.role === 'rider' && <InfoCard icon={<User size={18} color="#10b981" />} label="Transport" value={prefs.transportMethod || 'Not Set'} />}
               </div>
 
-              {/* Verification Documents */}
-              {prefs.verification_status === 'pending' && (
+              {/* Verification Section */}
+              {!prefs.is_verified && (
                   <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '20px', marginBottom: '25px' }}>
-                      <h3 style={{ margin: '0 0 15px 0', color: '#92400e' }}>Verification Documents</h3>
-                      <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
-                          {prefs.id_card_url && (
-                              <div style={{ textAlign: 'center' }}>
-                                  <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#78716c', margin: '0 0 5px' }}>ID Card</p>
-                                  <img src={prefs.id_card_url} alt="ID" style={{ width: '180px', height: '120px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #e5e7eb' }} />
-                              </div>
-                          )}
-                          {prefs.selfie_url && (
-                              <div style={{ textAlign: 'center' }}>
-                                  <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#78716c', margin: '0 0 5px' }}>Selfie</p>
-                                  <img src={prefs.selfie_url} alt="Selfie" style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #e5e7eb' }} />
-                              </div>
-                          )}
-                      </div>
-                      <button onClick={() => manuallyVerify(selectedUser)} style={{ background: '#10b981', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>
-                          ✓ Approve & Verify This User
+                      <h3 style={{ margin: '0 0 15px 0', color: '#92400e' }}>Account Verification</h3>
+                      { (prefs.id_card_url || prefs.selfie_url) ? (
+                          <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
+                              {prefs.id_card_url && (
+                                  <div style={{ textAlign: 'center' }}>
+                                      <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#78716c', margin: '0 0 5px' }}>ID Card</p>
+                                      <img src={prefs.id_card_url} alt="ID" style={{ width: '180px', height: '120px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #e5e7eb' }} />
+                                  </div>
+                              )}
+                              {prefs.selfie_url && (
+                                  <div style={{ textAlign: 'center' }}>
+                                      <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#78716c', margin: '0 0 5px' }}>Selfie</p>
+                                      <img src={prefs.selfie_url} alt="Selfie" style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #e5e7eb' }} />
+                                  </div>
+                              )}
+                          </div>
+                      ) : (
+                          <p style={{ color: '#92400e', fontSize: '14px', marginBottom: '15px' }}>No verification documents uploaded yet, but you can still manually verify this account.</p>
+                      )}
+                      
+                      <button onClick={() => manuallyVerify(selectedUser)} style={{ background: '#10b981', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <BadgeCheck size={18} /> Approve & Verify This User
                       </button>
                   </div>
               )}
