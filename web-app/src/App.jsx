@@ -195,6 +195,11 @@ const GlobalStyles = () => (
 
     /* ===== MOBILE RESPONSIVE OVERRIDES ===== */
     @media (max-width: 900px) {
+      /* Landing Nav */
+      .landing-nav-links { display: none !important; }
+      .mobile-menu-btn { display: block !important; }
+      
+      /* Landing Hero */
       .landing-hero-row {
         flex-direction: column !important;
         gap: 2.5rem !important;
@@ -222,9 +227,49 @@ const GlobalStyles = () => (
         max-width: 100% !important;
       }
       .landing-hero-image img {
-        height: 350px !important;
+        height: 300px !important;
+      }
+      .landing-hero-section {
+        padding: 3rem 5% 6rem 5% !important;
+        min-height: auto !important;
       }
       
+      /* Floating emojis */
+      .floating-emoji {
+        font-size: 2.5rem !important;
+        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)) !important;
+      }
+      
+      /* How It Works */
+      .how-it-works-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+      }
+      .how-it-works-grid > div {
+        padding: 2rem 1.5rem !important;
+        border-radius: 24px !important;
+      }
+      .how-it-works-section { padding: 4rem 5% !important; }
+      .how-it-works-section h2 { font-size: 2rem !important; }
+      
+      /* Stats Strip */
+      .stats-strip {
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+      }
+      .stats-strip > div > div:first-child {
+        font-size: 2.25rem !important;
+      }
+      
+      /* CTA Section */
+      .cta-section { padding: 4rem 5% !important; }
+      .cta-heading { font-size: 2.25rem !important; letter-spacing: -1px !important; }
+      .cta-section p { font-size: 1.05rem !important; }
+      .cta-buttons { flex-direction: column !important; width: 100%; }
+      .cta-buttons .chow-btn-primary { padding: 1.25rem 2rem !important; font-size: 1.1rem !important; }
+      .cta-buttons .chow-btn-secondary { padding: 1.25rem 2rem !important; font-size: 1rem !important; }
+      
+      /* Dashboard Layout */
       .dashboard-layout {
         flex-direction: column;
       }
@@ -288,7 +333,15 @@ const GlobalStyles = () => (
 
     @media (max-width: 480px) {
       .landing-hero-text h1 {
-        font-size: 2.25rem !important;
+        font-size: 2rem !important;
+        letter-spacing: -0.5px !important;
+      }
+      .landing-hero-text > div:first-child {
+        font-size: 0.75rem !important;
+        padding: 0.4rem 0.75rem !important;
+      }
+      .landing-hero-image img {
+        height: 220px !important;
       }
       .chow-btn-primary, .chow-btn-secondary {
         padding: 0.875rem 1.5rem;
@@ -297,6 +350,11 @@ const GlobalStyles = () => (
       .cta-heading {
         font-size: 1.75rem !important;
       }
+      .floating-emoji {
+        font-size: 2rem !important;
+      }
+      .how-it-works-section h2 { font-size: 1.75rem !important; }
+      .stats-strip > div > div:first-child { font-size: 2rem !important; }
     }
     `}
   </style>
@@ -330,7 +388,7 @@ function StandardLandingPage({ onSelectRole }) {
 
        <main>
           {/* HERO SECTION */}
-          <section style={{ padding: '4rem 5% 10rem 5%', backgroundColor: '#004F32', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative', minHeight: '80vh' }}>
+           <section className="landing-hero-section" style={{ padding: '4rem 5% 10rem 5%', backgroundColor: '#004F32', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', position: 'relative', minHeight: '80vh' }}>
             <div style={{ position: 'absolute', top: '-20%', right: '-10%', width: '800px', height: '800px', background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%)', filter: 'blur(80px)', pointerEvents: 'none' }} />
             <div style={{ position: 'absolute', bottom: '-20%', left: '-10%', width: '600px', height: '600px', background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
 
@@ -380,7 +438,7 @@ function StandardLandingPage({ onSelectRole }) {
           </section>
 
           {/* HOW IT WORKS */}
-          <section style={{ padding: '6rem 5%', backgroundColor: '#ffffff', position: 'relative' }}>
+           <section className="how-it-works-section" style={{ padding: '6rem 5%', backgroundColor: '#ffffff', position: 'relative' }}>
             <div style={{ maxWidth: '1100px', margin: '0 auto', textAlign: 'center' }}>
               <div style={{ display: 'inline-block', backgroundColor: '#E6F5ED', color: '#004F32', padding: '0.5rem 1.25rem', borderRadius: '99px', fontWeight: 800, fontSize: '0.85rem', marginBottom: '1.5rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
                 How It Works
@@ -413,7 +471,7 @@ function StandardLandingPage({ onSelectRole }) {
 
           {/* STATS STRIP */}
           <section style={{ padding: '4rem 5%', backgroundColor: '#111827' }}>
-            <div style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '2rem', textAlign: 'center' }}>
+             <div className="stats-strip" style={{ maxWidth: '1100px', margin: '0 auto', display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: '2rem', textAlign: 'center' }}>
               {[
                 { number: '500+', label: 'Orders Delivered' },
                 { number: '4', label: 'Campus Zones' },
@@ -429,7 +487,7 @@ function StandardLandingPage({ onSelectRole }) {
           </section>
 
           {/* CTA */}
-          <section style={{ padding: '8rem 5%', backgroundColor: '#004F32', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+           <section className="cta-section" style={{ padding: '8rem 5%', backgroundColor: '#004F32', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%2310B981\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
             <div style={{ maxWidth: '900px', margin: '0 auto', position: 'relative', zIndex: 10 }}>
               <h2 className="cta-heading" style={{ fontSize: '4.5rem', fontWeight: 900, color: 'white', marginBottom: '1.5rem', letterSpacing: '-2px', lineHeight: 1.1 }}>
@@ -438,7 +496,7 @@ function StandardLandingPage({ onSelectRole }) {
               <p style={{ color: '#A7F3D0', fontSize: '1.25rem', fontWeight: 500, marginBottom: '3rem', maxWidth: '500px', marginLeft: 'auto', marginRight: 'auto' }}>
                 Join hundreds of students already enjoying effortless campus food delivery.
               </p>
-              <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+               <div className="cta-buttons" style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
                  <button className="chow-btn-primary" style={{ backgroundColor: '#10B981', color: '#004F32', padding: '1.5rem 4rem', fontSize: '1.35rem', boxShadow: '0 15px 30px -5px rgba(16,185,129,0.4)' }} onClick={() => onSelectRole('student')}>
                    Order your next meal
                  </button>
