@@ -285,11 +285,11 @@ app.get('/api/requests/available', async (req, res) => {
 
 // Create Request
 app.post('/api/requests', async (req, res) => {
-    const { student_id, delivery_location_id, request_text, budget_range, cafeteria, estimated_price } = req.body;
+    const { student_id, delivery_location_id, request_text, budget_range, service_fee, cafeteria, estimated_price } = req.body;
     const id = 'req_' + Date.now();
     await db.run(`INSERT INTO requests (id, student_id, delivery_location_id, request_text, cafeteria, estimated_price, budget_range, status)
                   VALUES (?, ?, ?, ?, ?, ?, ?, 'request_sent')`, 
-                  [id, student_id, delivery_location_id, request_text, cafeteria, estimated_price || 0, budget_range]);
+                  [id, student_id, delivery_location_id, request_text, cafeteria, estimated_price || 0, service_fee || budget_range || null]);
     
     const newReq = await getPopulatedRequest(id);
     io.emit('new_request', newReq); // Global broadcast to riders

@@ -201,7 +201,7 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
                         <h3 style={{ margin: 0, color: '#6B7280', fontSize: '1.25rem', fontWeight: 600 }}>ID: <span style={{ color: '#111827' }}>{activeDelivery.id.substring(4,10)}</span></h3>
                         <div style={{ background: '#F9FAFB', color: '#111827', padding: '0.75rem 1.5rem', borderRadius: '99px', fontSize: '1rem', fontWeight: 800 }}>
-                            {activeDelivery.budget_range || 'Standard'}
+                            {activeDelivery.budget_range ? `Fee: ₦${parseInt(activeDelivery.budget_range).toLocaleString()}` : 'Standard'}
                         </div>
                     </div>
 
@@ -367,7 +367,7 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                             <div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                                     <span style={{ background: '#F3F4F6', color: '#4B5563', padding: '0.5rem 1rem', borderRadius: '99px', fontSize: '0.9rem', fontWeight: 800 }}>ID: {item.id.substring(4,10)}</span>
-                                    <span style={{ color: '#004F32', fontWeight: 900, fontSize: '1.25rem', background: '#E6F5ED', padding: '0.5rem 1rem', borderRadius: '99px' }}>{item.budget_range?.replace('$', '₦') || '₦₦'}</span>
+                                    <span style={{ color: '#004F32', fontWeight: 900, fontSize: '1.25rem', background: '#E6F5ED', padding: '0.5rem 1rem', borderRadius: '99px' }}>{item.budget_range ? `Fee: ₦${parseInt(item.budget_range).toLocaleString()}` : '—'}</span>
                                 </div>
                                 <p style={{ margin: '0 0 0.5rem', color: '#10B981', fontWeight: 800, fontSize: '0.85rem', textTransform: 'uppercase' }}>{item.cafeteria || 'Cafeteria'}</p>
                                 <h3 style={{ fontSize: '1.75rem', fontWeight: 900, color: '#111827', margin: '0 0 1.5rem', lineHeight: 1.3, letterSpacing: '-0.5px' }}>{item.request_text}</h3>

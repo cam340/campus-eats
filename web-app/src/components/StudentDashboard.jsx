@@ -9,7 +9,6 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
     const [locationId, setLocationId] = useState('');
     const [cafeteria, setCafeteria] = useState('New Cafeteria');
     const [estimatedPrice, setEstimatedPrice] = useState('');
-    const [budgetRange, setBudgetRange] = useState('Standard');
     const [activeRequest, setActiveRequest] = useState(null);
     const [history, setHistory] = useState([]);
     const [showHistory, setShowHistory] = useState(false);
@@ -68,7 +67,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                 request_text: requestText,
                 cafeteria: cafeteria,
                 estimated_price: parseFloat(estimatedPrice || 0),
-                budget_range: budgetRange
+                service_fee: getServiceFee()
             });
             setActiveRequest(newReq);
             setRequestText('');
@@ -102,6 +101,20 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
         } catch (err) {
             toast('Failed to cancel: ' + err.message, 'error');
         }
+    };
+
+    const getServiceFee = () => {
+        const price = parseFloat(estimatedPrice || 0);
+        if (price <= 3000) return Math.round(price * 0.05);
+        if (price <= 6000) return Math.round(price * 0.065);
+        return Math.round(price * 0.075);
+    };
+
+    const getServiceFeePercent = () => {
+        const price = parseFloat(estimatedPrice || 0);
+        if (price <= 3000) return '5%';
+        if (price <= 6000) return '6.5%';
+        return '7.5%';
     };
 
     return (
@@ -427,24 +440,24 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                         <div className="form-footer" style={{ marginTop: '2.5rem', padding: '2rem', background: '#F9FAFB', borderRadius: '24px', border: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>
                                 <p style={{ margin: '0 0 0.5rem', color: '#6B7280', fontWeight: 700, fontSize: '0.9rem', textTransform: 'uppercase' }}>Order Summary</p>
-                                <div style={{ display: 'flex', gap: '2rem' }}>
+                                <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
                                     <div>
-                                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#6B7280', fontWeight: 700 }}>Food + Fee</p>
-                                        <p style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900, color: '#111827' }}>
-                                            ₦{ (parseFloat(estimatedPrice || 0) + (locations.find(l => l.id == locationId)?.fee || 0)).toLocaleString() }
+                                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#6B7280', fontWeight: 700 }}>Food Cost</p>
+                                        <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: '#111827' }}>
+                                            ₦{parseFloat(estimatedPrice || 0).toLocaleString()}
                                         </p>
                                     </div>
                                     <div>
-                                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#6B7280', fontWeight: 700 }}>Budget Tier</p>
-                                        <select 
-                                            value={budgetRange} 
-                                            onChange={(e) => setBudgetRange(e.target.value)}
-                                            style={{ background: 'transparent', border: 'none', fontSize: '1.1rem', fontWeight: 800, color: '#10B981', outline: 'none', cursor: 'pointer', padding: 0 }}
-                                        >
-                                            <option value="Economical">Economical (₦)</option>
-                                            <option value="Standard">Standard (₦₦)</option>
-                                            <option value="Premium">Premium (₦₦₦)</option>
-                                        </select>
+                                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#6B7280', fontWeight: 700 }}>Service Fee ({getServiceFeePercent()})</p>
+                                        <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: '#10B981' }}>
+                                            ₦{getServiceFee().toLocaleString()}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p style={{ margin: 0, fontSize: '0.85rem', color: '#6B7280', fontWeight: 700 }}>Total</p>
+                                        <p style={{ margin: 0, fontSize: '1.35rem', fontWeight: 900, color: '#004F32' }}>
+                                            ₦{(parseFloat(estimatedPrice || 0) + getServiceFee()).toLocaleString()}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
