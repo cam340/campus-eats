@@ -5,6 +5,8 @@ const { open } = require('sqlite');
 const { Server } = require('socket.io');
 const http = require('http');
 
+const { createClient } = require('@libsql/client');
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -14,8 +16,59 @@ const io = new Server(server, { cors: { origin: '*' } });
 
 let db;
 
+// Turso/SQLite Compatibility Wrapper
+class Database {
+    constructor(client, isLibsql = false) {
+        this.client = client;
+        this.isLibsql = isLibsql;
+    }
+
+    async get(sql, params = []) {
+        if (this.isLibsql) {
+            const res = await this.client.execute({ sql, args: params });
+            return res.rows[0];
+        }
+        return await this.client.get(sql, params);
+    }
+
+    async all(sql, params = []) {
+        if (this.isLibsql) {
+            const res = await this.client.execute({ sql, args: params });
+            return res.rows;
+        }
+        return await this.client.all(sql, params);
+    }
+
+    async run(sql, params = []) {
+        if (this.isLibsql) {
+            return await this.client.execute({ sql, args: params });
+        }
+        return await this.client.run(sql, params);
+    }
+
+    async exec(sql) {
+        if (this.isLibsql) {
+            // multicall for libsql if needed, but usually just execute
+            return await this.client.execute(sql);
+        }
+        return await this.client.exec(sql);
+    }
+}
+
 async function initDB() {
-    db = await open({ filename: './database.sqlite', driver: sqlite3.Database });
+    const url = process.env.TURSO_URL;
+    const authToken = process.env.TURSO_AUTH_TOKEN;
+
+    if (url) {
+        console.log("☁️  CONNECTING TO TURSO CLOUD SQLITE...");
+        const client = createClient({ url, authToken });
+        db = new Database(client, true);
+    } else {
+        console.log("📁 USING LOCAL SQLITE...");
+        const localDb = await open({ filename: './database.sqlite', driver: sqlite3.Database });
+        db = new Database(localDb, false);
+    }
+
     await db.exec(`
         CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
