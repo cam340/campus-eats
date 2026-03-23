@@ -569,11 +569,13 @@ export default function App() {
         <DashboardLayout title="Rider" navItems={
           <>
             <button onClick={() => {setChatId(null); setActiveTab('main')}} className={`nav-btn ${activeTab === 'main' ? 'active' : ''}`}>Live Deliveries</button>
+            <button onClick={() => {setChatId(null); setActiveTab('history')}} className={`nav-btn ${activeTab === 'history' ? 'active' : ''}`}>📖 My History</button>
             <button onClick={() => setActiveTab('profile')} className={`nav-btn ${activeTab === 'profile' ? 'active' : ''}`}>My Profile</button>
             {activeTab === 'chat' && <button className="nav-btn active">Live Chat</button>}
           </>
         }>
           {activeTab === 'main' && <ErrorBoundary><RiderDashboard userId={activeUserId} onOpenChat={handleOpenChat} /></ErrorBoundary>}
+          {activeTab === 'history' && <ErrorBoundary><RiderDashboard userId={activeUserId} onOpenChat={handleOpenChat} initialShowHistory={true} /></ErrorBoundary>}
           {activeTab === 'profile' && <Profile userId={activeUserId} role="rider" onClose={() => setActiveTab('main')} />}
           {activeTab === 'chat' && <Chat userId={activeUserId} role="rider" requestId={chatId} onClose={() => setActiveTab('main')} />}
         </DashboardLayout>

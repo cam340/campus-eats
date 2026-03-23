@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { api, socket } from '../api';
 
-export default function RiderDashboard({ userId, onOpenChat }) {
+export default function RiderDashboard({ userId, onOpenChat, initialShowHistory = false }) {
     const [available, setAvailable] = useState([]);
     const [activeDelivery, setActiveDelivery] = useState(null);
+    const [history, setHistory] = useState([]);
+    const [showHistory, setShowHistory] = useState(initialShowHistory);
 
     useEffect(() => {
         const fetchInitial = async () => {
