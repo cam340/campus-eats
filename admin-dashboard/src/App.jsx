@@ -199,14 +199,37 @@ export default function App() {
   const [entered, setEntered] = useState(false);
   const [activeTab, setActiveTab] = useState('stats');
   const [user, setUser] = useState(null);
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('campus_user');
     if (saved) {
-      setUser(JSON.parse(saved));
-      setEntered(true);
+      const parsed = JSON.parse(saved);
+      if (parsed.role === 'admin') {
+        setUser(parsed);
+        setEntered(true);
+      }
     }
   }, []);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+        const data = await api.auth.login(loginForm);
+        if (data.role !== 'admin') {
+            throw new Error('Access denied. This portal is for administrators only.');
+        }
+        localStorage.setItem('campus_user', JSON.stringify(data));
+        setUser(data);
+        setEntered(true);
+    } catch(err) {
+        alert(err.message || 'Login failed');
+    } finally {
+        setLoading(false);
+    }
+  };
 
   const logout = () => {
     localStorage.removeItem('campus_user');
@@ -227,12 +250,39 @@ export default function App() {
             <div className="hero-content">
               <h1 className="hero-title">Campus<span>Eats</span> Admin</h1>
               <p className="hero-subtitle">
-                Manage the university's food delivery ecosystem with precision. 
-                Monitor real-time analytics, configure drop-off zones, and oversee rider fleets dynamically.
+                Access your administrative command center to manage the campus delivery ecosystem.
               </p>
-              <button className="btn-enter" onClick={() => setEntered(true)}>
-                Enter Portal
-              </button>
+              
+              <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <input 
+                    type="email" 
+                    placeholder="Admin Email"
+                    required
+                    value={loginForm.email}
+                    onChange={e => setLoginForm({...loginForm, email: e.target.value})}
+                    style={inputStyle} 
+                />
+                <input 
+                    type="password" 
+                    placeholder="Password" 
+                    required
+                    value={loginForm.password}
+                    onChange={e => setLoginForm({...loginForm, password: e.target.value})}
+                    style={inputStyle} 
+                />
+                <button 
+                  type="submit"
+                  disabled={loading}
+                  className="btn-enter" 
+                  style={{ width: '100%', marginTop: '1rem' }}
+                >
+                  {loading ? 'Authenticating...' : 'Sign In to Portal'}
+                </button>
+              </form>
+              
+              <p style={{ marginTop: '1.5rem', fontSize: '0.85rem', color: '#94a3b8', textAlign: 'center' }}>
+                Secure multi-tenant administrative access
+              </p>
             </div>
           </div>
         </div>
@@ -302,3 +352,15 @@ export default function App() {
     </ToastProvider>
   );
 }
+
+const inputStyle = {
+    width: '100%',
+    padding: '1.125rem 1.5rem',
+    borderRadius: '16px',
+    border: '2px solid #e2e8f0',
+    fontSize: '1rem',
+    fontWeight: '600',
+    outline: 'none',
+    transition: 'all 0.2s',
+    boxSizing: 'border-box'
+};
