@@ -471,9 +471,28 @@ export default function App() {
   const [chatId, setChatId] = useState(null);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('campus_user');
-    if (savedUser) {
+    // Try to restore session based on last active role
+    const lastRole = localStorage.getItem('campus_last_role');
+    if (lastRole) {
+      const savedUser = localStorage.getItem(`campus_user_${lastRole}`);
+      if (savedUser) {
         setSessionUser(JSON.parse(savedUser));
+        return;
+      }
+    }
+    // Fallback: try student then rider
+    const studentUser = localStorage.getItem('campus_user_student');
+    if (studentUser) { setSessionUser(JSON.parse(studentUser)); return; }
+    const riderUser = localStorage.getItem('campus_user_rider');
+    if (riderUser) { setSessionUser(JSON.parse(riderUser)); return; }
+    // Legacy fallback: migrate old single key
+    const legacyUser = localStorage.getItem('campus_user');
+    if (legacyUser) {
+      const parsed = JSON.parse(legacyUser);
+      localStorage.setItem(`campus_user_${parsed.role || 'student'}`, legacyUser);
+      localStorage.setItem('campus_last_role', parsed.role || 'student');
+      localStorage.removeItem('campus_user');
+      setSessionUser(parsed);
     }
   }, []);
 
@@ -483,7 +502,13 @@ export default function App() {
   };
 
   const logout = () => {
-    localStorage.removeItem('campus_user');
+    const role = sessionUser?.role || 'student';
+    localStorage.removeItem(`campus_user_${role}`);
+    // Clear last role if this was the active one
+    if (localStorage.getItem('campus_last_role') === role) {
+      localStorage.removeItem('campus_last_role');
+    }
+    localStorage.removeItem('campus_user'); // legacy cleanup
     setSessionUser(null);
   };
 
