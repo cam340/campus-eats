@@ -48,8 +48,11 @@ class Database {
 
     async exec(sql) {
         if (this.isLibsql) {
-            // multicall for libsql if needed, but usually just execute
-            return await this.client.execute(sql);
+            const statements = sql.split(';').map(s => s.trim()).filter(s => s.length > 0);
+            for (const s of statements) {
+                await this.client.execute(s);
+            }
+            return;
         }
         return await this.client.exec(sql);
     }
