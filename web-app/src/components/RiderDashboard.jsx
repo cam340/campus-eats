@@ -7,6 +7,16 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
     const [history, setHistory] = useState([]);
     const [showHistory, setShowHistory] = useState(initialShowHistory);
 
+    // Fetch history whenever the history tab is shown (or on mount if initialShowHistory)
+    useEffect(() => {
+        if (showHistory && userId) {
+            api.requests.getRiderHistory(userId).then(data => {
+                console.log('📜 Rider history fetched:', data?.length, 'items');
+                setHistory(data || []);
+            }).catch(console.error);
+        }
+    }, [showHistory, userId]);
+
     useEffect(() => {
         const fetchInitial = async () => {
             try {
@@ -19,6 +29,11 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                 if (active && active.length > 0) {
                     setActiveDelivery(active[0]);
                 }
+
+                // 3. Pre-fetch history so it's ready
+                const hist = await api.requests.getRiderHistory(userId);
+                console.log('📜 Rider history pre-fetched:', hist?.length, 'items');
+                setHistory(hist || []);
             } catch (err) {
                 console.error("Failed to fetch initial data:", err);
             }
@@ -37,6 +52,8 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
             if (activeDelivery && req.id === activeDelivery.id) {
                 if (req.status === 'delivered') {
                     setActiveDelivery(null);
+                    // Refresh history after delivery completion
+                    api.requests.getRiderHistory(userId).then(h => setHistory(h || [])).catch(console.error);
                 } else {
                     setActiveDelivery(req);
                 }
