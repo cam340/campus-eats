@@ -47,6 +47,7 @@ export const api = {
     create: (data) => client('requests', { body: data }),
     updateStatus: (requestId, status, riderId = null) => 
       client(`requests/${requestId}`, { method: 'PUT', body: { status, rider_id: riderId } }),
+    cancel: (requestId) => client(`requests/${requestId}`, { method: 'DELETE' }),
   },
   messages: {
     getByRequest: (requestId) => client(`messages/${requestId}`),

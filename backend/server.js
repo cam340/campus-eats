@@ -309,6 +309,23 @@ app.put('/api/requests/:id', async (req, res) => {
     res.json(updatedReq);
 });
 
+// Cancel Request
+app.delete('/api/requests/:id', async (req, res) => {
+    try {
+        const existing = await db.get('SELECT * FROM requests WHERE id = ?', [req.params.id]);
+        if (!existing) return res.status(404).json({ error: 'Request not found' });
+        if (['delivered', 'cancelled'].includes(existing.status)) {
+            return res.status(400).json({ error: 'Cannot cancel a completed or already cancelled order' });
+        }
+        await db.run(`UPDATE requests SET status = 'cancelled' WHERE id = ?`, [req.params.id]);
+        const cancelledReq = await getPopulatedRequest(req.params.id);
+        io.emit('request_updated', cancelledReq);
+        res.json(cancelledReq);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Messages
 app.get('/api/messages/:requestId', async (req, res) => {
     const msgs = await db.all("SELECT * FROM messages WHERE request_id = ? ORDER BY created_at ASC", [req.params.requestId]);

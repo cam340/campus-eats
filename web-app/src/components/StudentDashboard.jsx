@@ -40,6 +40,10 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                     toast("Order Delivered! Enjoy your meal 🥘", "success");
                     setActiveRequest(null);
                     api.requests.getStudentHistory(userId).then(setHistory).catch(console.error);
+                } else if (updatedReq.status === 'cancelled') {
+                    toast("Order cancelled.", "info");
+                    setActiveRequest(null);
+                    api.requests.getStudentHistory(userId).then(setHistory).catch(console.error);
                 } else {
                     setActiveRequest(updatedReq);
                 }
@@ -83,6 +87,21 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
             'delivered': 'Delivered! Enjoy your meal.'
         };
         return statuses[status] || status;
+    };
+
+    const handleCancel = async () => {
+        if (!activeRequest) return;
+        const confirmed = window.confirm('Are you sure you want to cancel this order?');
+        if (!confirmed) return;
+        try {
+            await api.requests.cancel(activeRequest.id);
+            toast('Order cancelled successfully.', 'info');
+            setActiveRequest(null);
+            const hist = await api.requests.getStudentHistory(userId);
+            setHistory(hist || []);
+        } catch (err) {
+            toast('Failed to cancel: ' + err.message, 'error');
+        }
     };
 
     return (
@@ -323,6 +342,18 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                                 onMouseOut={(e) => {e.currentTarget.style.transform='translateY(0)'}}
                             >
                                 <span>💬</span> Open Live Chat with Rider
+                            </button>
+                        )}
+
+                        {/* Cancel Button - only before rider is on the way */}
+                        {['request_sent', 'accepted', 'at_cafeteria'].includes(activeRequest.status) && (
+                            <button 
+                                onClick={handleCancel}
+                                style={{ width: '100%', background: 'none', color: '#EF4444', border: '2px solid #FEE2E2', padding: '1rem', borderRadius: '99px', cursor: 'pointer', fontWeight: 800, fontSize: '1rem', transition: 'all 0.2s', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                                onMouseOver={(e) => {e.currentTarget.style.background='#FEF2F2'; e.currentTarget.style.borderColor='#EF4444'}}
+                                onMouseOut={(e) => {e.currentTarget.style.background='none'; e.currentTarget.style.borderColor='#FEE2E2'}}
+                            >
+                                ✕ Cancel Order
                             </button>
                         )}
                     </div>
