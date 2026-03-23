@@ -404,6 +404,31 @@ app.patch('/api/admin/locations/:id', async (req, res) => {
     res.json({ success: true });
 });
 
+// Student History
+app.get('/api/requests/student/:id/history', async (req, res) => {
+    const data = await db.all(`
+        SELECT r.*, l.name as delivery_location_name, l.fee
+        FROM requests r
+        LEFT JOIN delivery_locations l ON r.delivery_location_id = l.id
+        WHERE r.student_id = ?
+        ORDER BY r.created_at DESC
+    `, [req.params.id]);
+    res.json(data);
+});
+
+// Rider History
+app.get('/api/requests/rider/:id/history', async (req, res) => {
+    const data = await db.all(`
+        SELECT r.*, l.name as delivery_location_name, l.fee
+        FROM requests r
+        LEFT JOIN delivery_locations l ON r.delivery_location_id = l.id
+        WHERE r.rider_id = ?
+        ORDER BY r.created_at DESC
+    `, [req.params.id]);
+    res.json(data);
+});
+
+// Admin Routes
 app.get('/api/admin/stats', async (req, res) => {
     const reqs = await db.all("SELECT * FROM requests");
     const activeReqs = reqs.filter(r => r.status !== 'delivered').length;

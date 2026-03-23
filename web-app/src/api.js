@@ -38,9 +38,11 @@ export const api = {
   locations: {
     getAll: () => client('locations'),
   },
-  requests: {
+    requests: {
     getStudentActive: (studentId) => client(`requests/student/${studentId}`),
     getRiderActive: (riderId) => client(`requests/rider/${riderId}`),
+    getStudentHistory: (studentId) => client(`requests/student/${studentId}/history`),
+    getRiderHistory: (riderId) => client(`requests/rider/${riderId}/history`),
     getAvailable: () => client('requests/available'),
     create: (data) => client('requests', { body: data }),
     updateStatus: (requestId, status, riderId = null) => 

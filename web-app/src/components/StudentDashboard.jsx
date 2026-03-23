@@ -11,6 +11,8 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
     const [estimatedPrice, setEstimatedPrice] = useState('');
     const [budgetRange, setBudgetRange] = useState('Standard');
     const [activeRequest, setActiveRequest] = useState(null);
+    const [history, setHistory] = useState([]);
+    const [showHistory, setShowHistory] = useState(false);
 
     useEffect(() => {
         console.log("StudentDashboard mounted for user:", userId);
@@ -21,6 +23,9 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
 
                 const reqs = await api.requests.getStudentActive(userId);
                 if (reqs && reqs.length > 0) setActiveRequest(reqs[0]);
+
+                const hist = await api.requests.getStudentHistory(userId);
+                setHistory(hist || []);
             } catch (err) {
                 console.error("Failed to fetch initial data:", err);
                 toast("Connection error. Please refresh.", "error");
@@ -33,6 +38,8 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                 if (updatedReq.status === 'delivered') {
                     toast("Order Delivered! Enjoy your meal 🥘", "success");
                     setActiveRequest(null);
+                    // Refresh history after an order is delivered
+                    api.requests.getStudentHistory(userId).then(setHistory).catch(console.error);
                 } else {
                     setActiveRequest(updatedReq);
                 }

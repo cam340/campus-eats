@@ -54,6 +54,7 @@ export default function RiderDashboard({ userId, onOpenChat }) {
         try {
             const updated = await api.requests.updateStatus(order.id, 'accepted', userId);
             setActiveDelivery(updated);
+            // Refresh history after a change might affect it (though usually only on 'delivered')
         } catch (error) {
             alert('Error accepting: ' + error.message);
         }
@@ -79,6 +80,7 @@ export default function RiderDashboard({ userId, onOpenChat }) {
             const updated = await api.requests.updateStatus(activeDelivery.id, next);
             if (next === 'delivered') {
                 setActiveDelivery(null);
+                api.requests.getRiderHistory(userId).then(setHistory).catch(console.error);
             } else {
                 setActiveDelivery(updated);
             }
