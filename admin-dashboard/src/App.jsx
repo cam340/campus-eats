@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { api } from './api';
 import LocationManager from './components/LocationManager';
 import DashboardStats from './components/DashboardStats';
 import UsersManager from './components/UsersManager';
