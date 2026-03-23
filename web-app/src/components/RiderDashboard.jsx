@@ -147,6 +147,23 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                         .action-btn { font-size: 1.1rem !important; padding: 1.25rem !important; }
                         .queue-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
                         .queue-card { padding: 1.5rem !important; }
+                        .rider-analytics-bar { grid-template-columns: 1fr !important; gap: 1rem !important; }
+                        .rider-analytics-bar > div { padding: 1.25rem 1.5rem !important; border-radius: 20px !important; }
+                        .rider-analytics-bar p:last-child { font-size: 1.75rem !important; }
+                        .rider-header { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
+                        .rider-header h2 { font-size: 2rem !important; }
+                        .rider-header-actions { width: 100%; justify-content: flex-start !important; }
+                        .rider-history-overlay { padding: 2rem 4% !important; }
+                        .rider-history-head { flex-direction: column !important; gap: 1.5rem !important; align-items: flex-start !important; margin-bottom: 2rem !important; }
+                        .rider-history-head h2 { font-size: 2rem !important; }
+                        .rider-history-head button { width: 100% !important; padding: 1rem 2rem !important; font-size: 1rem !important; }
+                        .rider-history-stats { grid-template-columns: 1fr !important; gap: 1rem !important; }
+                        .rider-history-stats > div { padding: 1.5rem !important; border-radius: 24px !important; }
+                        .rider-history-stats p:last-child { font-size: 1.75rem !important; }
+                        .rider-history-card { flex-direction: column !important; align-items: flex-start !important; gap: 1.5rem !important; padding: 1.5rem !important; border-radius: 24px !important; }
+                        .rider-history-card-left { gap: 1.5rem !important; }
+                        .rider-history-card-left > div:first-child { min-width: auto !important; padding: 1rem !important; }
+                        .rider-history-card-right { text-align: left !important; width: 100%; display: flex; align-items: center; justify-content: space-between; }
                     }
                     `}
                 </style>
@@ -212,12 +229,12 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
 
     return (
         <div style={{ animation: 'slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem' }}>
+            <div className="rider-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '3rem' }}>
                 <div>
                     <h2 style={{ fontSize: '3rem', fontWeight: 900, color: '#111827', margin: 0, letterSpacing: '-1.5px' }}>Live Order Queue</h2>
                     <p style={{ color: '#6B7280', margin: '0.5rem 0 0', fontSize: '1.25rem', fontWeight: 500 }}>Select a delivery to start earning instantly.</p>
                 </div>
-                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <div className="rider-header-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <button onClick={() => setShowHistory(true)} style={{ background: 'white', color: '#111827', border: '2px solid #E5E7EB', padding: '0.75rem 1.5rem', borderRadius: '99px', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onMouseOver={(e) => e.currentTarget.style.borderColor = '#10B981'} onMouseOut={(e) => e.currentTarget.style.borderColor = '#E5E7EB'}>
                         📜 View My History
                     </button>
@@ -229,7 +246,7 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
             </div>
 
             {/* Earnings Analytics Bar */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
+            <div className="rider-analytics-bar" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
                 <div style={{ background: 'white', padding: '2rem 2.5rem', borderRadius: '28px', boxShadow: '0 10px 30px -5px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.03)' }}>
                     <p style={{ margin: '0 0 0.5rem', color: '#6B7280', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Total Earnings</p>
                     <p style={{ margin: 0, fontSize: '2.25rem', fontWeight: 900, color: '#004F32', letterSpacing: '-1px' }}>₦{totalEarnings.toLocaleString()}</p>
@@ -245,9 +262,9 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
             </div>
 
             {showHistory && (
-                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#F9FAFB', zIndex: 1000, padding: '4rem 5%', overflowY: 'auto', animation: 'slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
+                 <div className="rider-history-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#F9FAFB', zIndex: 1000, padding: '4rem 5%', overflowY: 'auto', animation: 'slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
                     <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
+                        <div className="rider-history-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
                             <div>
                                 <h2 style={{ fontSize: '3.5rem', fontWeight: 900, color: '#111827', margin: 0, letterSpacing: '-2px' }}>Delivery History</h2>
                                 <p style={{ color: '#6B7280', margin: '0.5rem 0 0', fontSize: '1.35rem', fontWeight: 500 }}>Track your successful missions and total earnings.</p>
@@ -256,7 +273,7 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                         </div>
 
                         {/* Earnings Summary Card */}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
+                        <div className="rider-history-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
                             <div style={{ background: '#004F32', padding: '2.5rem', borderRadius: '32px', textAlign: 'center', color: 'white' }}>
                                 <p style={{ margin: '0 0 0.75rem', color: '#A7F3D0', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px' }}>Total Earned</p>
                                 <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-1px' }}>₦{totalEarnings.toLocaleString()}</p>
@@ -280,8 +297,8 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                                 </div>
                             ) : (
                                 history.map(item => (
-                                    <div key={item.id} style={{ background: 'white', padding: '2.5rem', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 10px 30px -5px rgba(0,0,0,0.04)' }}>
-                                        <div style={{ display: 'flex', gap: '3rem', alignItems: 'center' }}>
+                                    <div key={item.id} className="rider-history-card" style={{ background: 'white', padding: '2.5rem', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 10px 30px -5px rgba(0,0,0,0.04)' }}>
+                                        <div className="rider-history-card-left" style={{ display: 'flex', gap: '3rem', alignItems: 'center' }}>
                                             <div style={{ background: '#E6F5ED', color: '#004F32', padding: '1.5rem', borderRadius: '24px', textAlign: 'center', minWidth: '100px' }}>
                                                 <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#10B981', textTransform: 'uppercase' }}>{new Date(item.created_at).toLocaleDateString('en-US', { month: 'short' })}</p>
                                                 <p style={{ margin: 0, fontSize: '2rem', fontWeight: 900 }}>{new Date(item.created_at).getDate()}</p>
@@ -292,7 +309,7 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                                                 <p style={{ margin: '1rem 0 0', color: '#6B7280', fontSize: '1.1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📍 {item.delivery_location_name}</p>
                                             </div>
                                         </div>
-                                        <div style={{ textAlign: 'right' }}>
+                                        <div className="rider-history-card-right" style={{ textAlign: 'right' }}>
                                             <p style={{ margin: 0, fontSize: '1rem', color: '#6B7280', fontWeight: 800, letterSpacing: '1px' }}>EARNING</p>
                                             <p style={{ margin: '0.25rem 0 0', fontSize: '2rem', fontWeight: 900, color: '#111827' }}>₦{(item.fee || 0).toLocaleString()}</p>
                                             <span style={{ fontSize: '0.9rem', fontWeight: 800, color: item.status === 'delivered' ? '#10B981' : '#F59E0B', background: item.status === 'delivered' ? '#E6F5ED' : '#FFFBEB', padding: '0.5rem 1.25rem', borderRadius: '99px', display: 'inline-block', marginTop: '1rem', textTransform: 'uppercase' }}>{item.status}</span>
@@ -305,7 +322,7 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                  </div>
             )}
 
-            <div className="queue-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '2.5rem' }}>
+            <div className="queue-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2.5rem' }}>
                 {available.length === 0 ? (
                     <div style={{ background: 'white', padding: '6rem', borderRadius: '40px', textAlign: 'center', gridColumn: '1 / -1', border: '2px dashed #E5E7EB' }}>
                         <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>😴</div>

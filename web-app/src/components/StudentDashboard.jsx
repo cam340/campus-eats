@@ -87,12 +87,29 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
 
     return (
         <div style={{ backgroundColor: '#F9FAFB', minHeight: '100vh' }}>
-            <header style={{ backgroundColor: 'white', padding: '1.25rem 5%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid #E5E7EB' }}>
+            <style>
+                {`
+                @media (max-width: 600px) {
+                    .student-top-header { padding: 1rem 4% !important; flex-wrap: wrap; gap: 0.75rem !important; }
+                    .student-top-header > div:first-child { font-size: 1.35rem !important; }
+                    .student-header-actions { flex-wrap: wrap !important; gap: 0.5rem !important; }
+                    .student-header-actions > * { font-size: 0.85rem !important; padding: 0.4rem 0.75rem !important; }
+                    .student-history-container { padding: 2rem 4% !important; }
+                    .student-history-head { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
+                    .student-history-head h2 { font-size: 2rem !important; }
+                    .student-history-head button { width: 100% !important; }
+                    .student-history-card { flex-direction: column !important; align-items: flex-start !important; gap: 1.25rem !important; padding: 1.5rem !important; border-radius: 24px !important; }
+                    .student-history-card-left { gap: 1.25rem !important; }
+                    .student-history-card-right { width: 100%; display: flex; align-items: center; justify-content: space-between; text-align: left !important; }
+                }
+                `}
+            </style>
+            <header className="student-top-header" style={{ backgroundColor: 'white', padding: '1.25rem 5%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid #E5E7EB' }}>
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#004F32', letterSpacing: '-1.5px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <div style={{ width: '32px', height: '32px', backgroundColor: '#10B981', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#004F32', fontSize: '1.2rem' }}>✦</div>
                     CampusEats
                 </div>
-                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                <div className="student-header-actions" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F3F4F6', padding: '0.5rem 1rem', borderRadius: '99px', fontSize: '1rem', fontWeight: 800 }}>
                         📍 
                         <select 
@@ -121,8 +138,8 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
             </header>
             
             {showHistory ? (
-                <div style={{ padding: '4rem 5%', maxWidth: '1200px', margin: '0 auto', animation: 'slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+                <div className="student-history-container" style={{ padding: '4rem 5%', maxWidth: '1200px', margin: '0 auto', animation: 'slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
+                    <div className="student-history-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
                         <div>
                             <h2 style={{ fontSize: '3rem', fontWeight: 900, color: '#111827', margin: 0, letterSpacing: '-1.5px' }}>Order History</h2>
                             <p style={{ color: '#6B7280', margin: '0.5rem 0 0', fontSize: '1.25rem' }}>Your past campus cravings and deliveries.</p>
@@ -139,8 +156,8 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                             </div>
                         ) : (
                             history.map(item => (
-                                <div key={item.id} style={{ background: 'white', padding: '2.5rem', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.03)' }}>
-                                    <div style={{ display: 'flex', gap: '2.5rem', alignItems: 'center' }}>
+                                <div key={item.id} className="student-history-card" style={{ background: 'white', padding: '2.5rem', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.03)' }}>
+                                    <div className="student-history-card-left" style={{ display: 'flex', gap: '2.5rem', alignItems: 'center' }}>
                                         <div style={{ background: '#F3F4F6', padding: '1.25rem', borderRadius: '20px', textAlign: 'center', minWidth: '90px' }}>
                                             <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase' }}>{new Date(item.created_at).toLocaleDateString('en-US', { month: 'short' })}</p>
                                             <p style={{ margin: 0, fontSize: '1.75rem', fontWeight: 900, color: '#111827' }}>{new Date(item.created_at).getDate()}</p>
@@ -151,7 +168,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                                             <p style={{ margin: '0.75rem 0 0', color: '#6B7280', fontSize: '1rem', fontWeight: 600 }}>Dropped at: 📍 {item.delivery_location_name}</p>
                                         </div>
                                     </div>
-                                    <div style={{ textAlign: 'right' }}>
+                                    <div className="student-history-card-right" style={{ textAlign: 'right' }}>
                                         <p style={{ margin: 0, fontSize: '1.75rem', fontWeight: 900, color: '#111827' }}>₦{( (item.estimated_price || 0) + (item.fee || 0) ).toLocaleString()}</p>
                                         <span style={{ fontSize: '0.9rem', fontWeight: 800, color: item.status === 'delivered' ? '#10B981' : '#F59E0B', background: item.status === 'delivered' ? '#E6F5ED' : '#FFFBEB', padding: '0.5rem 1rem', borderRadius: '99px', display: 'inline-block', marginTop: '0.75rem', textTransform: 'uppercase' }}>{item.status}</span>
                                     </div>
