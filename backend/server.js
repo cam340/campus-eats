@@ -122,26 +122,41 @@ async function initDB() {
 
 // REST ENDPOINTS
 app.post('/api/auth/signup', async (req, res) => {
+    console.log("Signup attempt:", req.body.email, req.body.role);
     try {
         const { email, password, full_name, phone_number, hostel_name, room_number, role } = req.body;
         const id = Date.now().toString() + Math.random().toString(36).substring(7);
+        
         await db.run(`INSERT INTO users (id, email, password, name, full_name, role, phone_number, hostel_name, room_number)
                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
                       [id, email, password, full_name, full_name, role, phone_number, hostel_name, room_number]);
+        
+        console.log("Signup success:", email);
         res.json({ id, email, full_name, role });
     } catch(err) {
-        if(err.message.includes('UNIQUE constraint failed')) {
+        console.error("Signup error:", err);
+        if(err.message && err.message.includes('UNIQUE constraint failed')) {
             return res.status(400).json({ error: 'Email already registered' });
         }
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ error: err.message || "Database error during signup" });
     }
 });
 
 app.post('/api/auth/login', async (req, res) => {
-    const { email, password } = req.body;
-    const user = await db.get("SELECT * FROM users WHERE email = ? AND password = ?", [email, password]);
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-    res.json({ id: user.id, email: user.email, name: user.name, full_name: user.full_name, role: user.role });
+    console.log("Login attempt:", req.body.email);
+    try {
+        const { email, password } = req.body;
+        const user = await db.get("SELECT * FROM users WHERE email = ? AND password = ?", [email, password]);
+        if (!user) {
+            console.log("Login failed: Invalid credentials for", email);
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        console.log("Login success:", email);
+        res.json({ id: user.id, email: user.email, name: user.name, full_name: user.full_name, role: user.role });
+    } catch (err) {
+        console.error("Login error:", err);
+        res.status(500).json({ error: err.message || "Database error during login" });
+    }
 });
 
 app.get('/api/locations', async (req, res) => {
