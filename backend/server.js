@@ -5,7 +5,7 @@ const { open } = require('sqlite');
 const { Server } = require('socket.io');
 const http = require('http');
 
-const { createClient } = require('@libsql/client');
+const { createClient } = require('@libsql/client/web');
 
 const app = express();
 app.use(cors());
