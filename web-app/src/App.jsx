@@ -529,27 +529,24 @@ export default function App() {
   const [chatId, setChatId] = useState(null);
 
   useEffect(() => {
-    // Try to restore session based on last active role
-    const lastRole = localStorage.getItem('campus_last_role');
-    if (lastRole) {
-      const savedUser = localStorage.getItem(`campus_user_${lastRole}`);
-      if (savedUser) {
-        setSessionUser(JSON.parse(savedUser));
-        return;
-      }
+    // Restore session from single key
+    const savedUser = localStorage.getItem('campus_user');
+    if (savedUser) {
+      setSessionUser(JSON.parse(savedUser));
+      return;
     }
-    // Fallback: try student then rider
-    const studentUser = localStorage.getItem('campus_user_student');
-    if (studentUser) { setSessionUser(JSON.parse(studentUser)); return; }
-    const riderUser = localStorage.getItem('campus_user_rider');
-    if (riderUser) { setSessionUser(JSON.parse(riderUser)); return; }
-    // Legacy fallback: migrate old single key
-    const legacyUser = localStorage.getItem('campus_user');
+    // Migration: move legacy per-role keys to single key
+    const lastRole = localStorage.getItem('campus_last_role');
+    const legacyUser = lastRole
+      ? localStorage.getItem(`campus_user_${lastRole}`)
+      : localStorage.getItem('campus_user_student') || localStorage.getItem('campus_user_rider');
     if (legacyUser) {
       const parsed = JSON.parse(legacyUser);
-      localStorage.setItem(`campus_user_${parsed.role || 'student'}`, legacyUser);
-      localStorage.setItem('campus_last_role', parsed.role || 'student');
-      localStorage.removeItem('campus_user');
+      localStorage.setItem('campus_user', JSON.stringify(parsed));
+      // Clean up old keys
+      localStorage.removeItem('campus_last_role');
+      localStorage.removeItem('campus_user_student');
+      localStorage.removeItem('campus_user_rider');
       setSessionUser(parsed);
     }
   }, []);
@@ -560,13 +557,11 @@ export default function App() {
   };
 
   const logout = () => {
-    const role = sessionUser?.role || 'student';
-    localStorage.removeItem(`campus_user_${role}`);
-    // Clear last role if this was the active one
-    if (localStorage.getItem('campus_last_role') === role) {
-      localStorage.removeItem('campus_last_role');
-    }
-    localStorage.removeItem('campus_user'); // legacy cleanup
+    localStorage.removeItem('campus_user');
+    // Clean up any legacy keys
+    localStorage.removeItem('campus_last_role');
+    localStorage.removeItem('campus_user_student');
+    localStorage.removeItem('campus_user_rider');
     setSessionUser(null);
   };
 

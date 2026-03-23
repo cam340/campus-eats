@@ -34,9 +34,13 @@ export default function Auth({ intendedRole, onCancel, onLoginSuccess }) {
       }
       
       console.log("Signup/Login API result:", data);
-      const roleKey = `campus_user_${data.role || intendedRole}`;
-      localStorage.setItem(roleKey, JSON.stringify(data));
-      localStorage.setItem('campus_last_role', data.role || intendedRole);
+      // Ensure the role is always set correctly from server response
+      const userData = { ...data, role: data.role || intendedRole };
+      localStorage.setItem('campus_user', JSON.stringify(userData));
+      // Clean up legacy per-role keys to prevent stale session issues
+      localStorage.removeItem('campus_last_role');
+      localStorage.removeItem('campus_user_student');
+      localStorage.removeItem('campus_user_rider');
       toast(isLogin ? `Welcome back, ${data.full_name || data.name || 'User'}! 🎉` : 'Account created successfully! Welcome aboard! 🎉', 'success');
       onLoginSuccess(data);
 
