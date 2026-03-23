@@ -7,6 +7,12 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
     const [history, setHistory] = useState([]);
     const [showHistory, setShowHistory] = useState(initialShowHistory);
 
+    // Computed analytics from history
+    const deliveredOrders = history.filter(h => h.status === 'delivered');
+    const totalEarnings = deliveredOrders.reduce((sum, h) => sum + (h.fee || 0), 0);
+    const deliveredCount = deliveredOrders.length;
+    const avgEarning = deliveredCount > 0 ? Math.round(totalEarnings / deliveredCount) : 0;
+
     // Fetch history whenever the history tab is shown (or on mount if initialShowHistory)
     useEffect(() => {
         if (showHistory && userId) {
@@ -222,6 +228,22 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                 </div>
             </div>
 
+            {/* Earnings Analytics Bar */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
+                <div style={{ background: 'white', padding: '2rem 2.5rem', borderRadius: '28px', boxShadow: '0 10px 30px -5px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.03)' }}>
+                    <p style={{ margin: '0 0 0.5rem', color: '#6B7280', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Total Earnings</p>
+                    <p style={{ margin: 0, fontSize: '2.25rem', fontWeight: 900, color: '#004F32', letterSpacing: '-1px' }}>₦{totalEarnings.toLocaleString()}</p>
+                </div>
+                <div style={{ background: 'white', padding: '2rem 2.5rem', borderRadius: '28px', boxShadow: '0 10px 30px -5px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.03)' }}>
+                    <p style={{ margin: '0 0 0.5rem', color: '#6B7280', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Deliveries Done</p>
+                    <p style={{ margin: 0, fontSize: '2.25rem', fontWeight: 900, color: '#111827', letterSpacing: '-1px' }}>{deliveredCount}</p>
+                </div>
+                <div style={{ background: 'white', padding: '2rem 2.5rem', borderRadius: '28px', boxShadow: '0 10px 30px -5px rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.03)' }}>
+                    <p style={{ margin: '0 0 0.5rem', color: '#6B7280', fontSize: '0.9rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>Avg per Delivery</p>
+                    <p style={{ margin: 0, fontSize: '2.25rem', fontWeight: 900, color: '#10B981', letterSpacing: '-1px' }}>₦{avgEarning.toLocaleString()}</p>
+                </div>
+            </div>
+
             {showHistory && (
                  <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#F9FAFB', zIndex: 1000, padding: '4rem 5%', overflowY: 'auto', animation: 'slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
                     <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
@@ -231,6 +253,22 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                                 <p style={{ color: '#6B7280', margin: '0.5rem 0 0', fontSize: '1.35rem', fontWeight: 500 }}>Track your successful missions and total earnings.</p>
                             </div>
                             <button onClick={() => setShowHistory(false)} style={{ background: '#004F32', color: 'white', border: 'none', padding: '1.25rem 3rem', borderRadius: '99px', fontWeight: 900, fontSize: '1.2rem', cursor: 'pointer', boxShadow: '0 15px 30px -5px rgba(0,79,50,0.3)' }}>Return to Queue</button>
+                        </div>
+
+                        {/* Earnings Summary Card */}
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginBottom: '3rem' }}>
+                            <div style={{ background: '#004F32', padding: '2.5rem', borderRadius: '32px', textAlign: 'center', color: 'white' }}>
+                                <p style={{ margin: '0 0 0.75rem', color: '#A7F3D0', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px' }}>Total Earned</p>
+                                <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-1px' }}>₦{totalEarnings.toLocaleString()}</p>
+                            </div>
+                            <div style={{ background: 'white', padding: '2.5rem', borderRadius: '32px', textAlign: 'center', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 10px 30px -5px rgba(0,0,0,0.04)' }}>
+                                <p style={{ margin: '0 0 0.75rem', color: '#6B7280', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px' }}>Completed</p>
+                                <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 900, color: '#111827', letterSpacing: '-1px' }}>{deliveredCount}</p>
+                            </div>
+                            <div style={{ background: 'white', padding: '2.5rem', borderRadius: '32px', textAlign: 'center', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 10px 30px -5px rgba(0,0,0,0.04)' }}>
+                                <p style={{ margin: '0 0 0.75rem', color: '#6B7280', fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1.5px' }}>Avg Earning</p>
+                                <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: 900, color: '#10B981', letterSpacing: '-1px' }}>₦{avgEarning.toLocaleString()}</p>
+                            </div>
                         </div>
 
                         <div style={{ display: 'grid', gap: '2rem' }}>
