@@ -6,6 +6,7 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
     const [activeDelivery, setActiveDelivery] = useState(null);
     const [history, setHistory] = useState([]);
     const [showHistory, setShowHistory] = useState(initialShowHistory);
+    const [declinedIds, setDeclinedIds] = useState([]);
 
     // Computed analytics from history
     const deliveredOrders = history.filter(h => h.status === 'delivered');
@@ -51,14 +52,19 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
         };
 
         const handleReqUpdate = (req) => {
-            if (req.status !== 'request_sent') {
+            if (req.status === 'request_sent') {
+                // Order was returned to queue (e.g. rider dropped it)
+                setAvailable(prev => {
+                    if (prev.find(r => r.id === req.id)) return prev;
+                    return [req, ...prev];
+                });
+            } else if (req.status !== 'request_sent') {
                 setAvailable(prev => prev.filter(r => r.id !== req.id));
             }
-            // If our active delivery was updated elsewhere (e.g. by admin or chat)
+            // If our active delivery was updated elsewhere
             if (activeDelivery && req.id === activeDelivery.id) {
-                if (req.status === 'delivered') {
+                if (req.status === 'delivered' || req.status === 'cancelled' || req.status === 'request_sent') {
                     setActiveDelivery(null);
-                    // Refresh history after delivery completion
                     api.requests.getRiderHistory(userId).then(h => setHistory(h || [])).catch(console.error);
                 } else {
                     setActiveDelivery(req);
@@ -79,9 +85,24 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
         try {
             const updated = await api.requests.updateStatus(order.id, 'accepted', userId);
             setActiveDelivery(updated);
-            // Refresh history after a change might affect it (though usually only on 'delivered')
         } catch (error) {
             alert('Error accepting: ' + error.message);
+        }
+    };
+
+    const declineOrder = (orderId) => {
+        setDeclinedIds(prev => [...prev, orderId]);
+    };
+
+    const dropDelivery = async () => {
+        if (!activeDelivery) return;
+        const confirmed = window.confirm('Drop this delivery? The order will go back to the queue for another rider.');
+        if (!confirmed) return;
+        try {
+            await api.requests.updateStatus(activeDelivery.id, 'request_sent', null);
+            setActiveDelivery(null);
+        } catch (error) {
+            alert('Error dropping delivery: ' + error.message);
         }
     };
 
@@ -221,6 +242,16 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                         >
                             Open Live Chat with Student
                         </button>
+                        {activeDelivery.status === 'accepted' && (
+                            <button 
+                                onClick={dropDelivery}
+                                style={{ width: '100%', background: 'none', color: '#EF4444', border: '2px solid #FEE2E2', padding: '1rem', borderRadius: '99px', cursor: 'pointer', fontWeight: 800, fontSize: '1rem', transition: 'all 0.2s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+                                onMouseOver={(e) => {e.currentTarget.style.background='#FEF2F2'; e.currentTarget.style.borderColor='#EF4444'}}
+                                onMouseOut={(e) => {e.currentTarget.style.background='none'; e.currentTarget.style.borderColor='#FEE2E2'}}
+                            >
+                                ✕ Drop This Delivery
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -323,6 +354,7 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
             )}
 
             <div className="queue-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2.5rem' }}>
+                {/* Filter out declined orders */}
                 {available.length === 0 ? (
                     <div style={{ background: 'white', padding: '6rem', borderRadius: '40px', textAlign: 'center', gridColumn: '1 / -1', border: '2px dashed #E5E7EB' }}>
                         <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>😴</div>
@@ -330,7 +362,7 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                         <p style={{ color: '#6B7280', fontSize: '1.25rem', fontWeight: 500 }}>Waiting for students to drop their cravings in the queue.</p>
                     </div>
                 ) : (
-                    available.map(item => (
+                    available.filter(item => !declinedIds.includes(item.id)).map(item => (
                         <div className="queue-card" key={item.id} style={{ background: 'white', padding: '3rem', borderRadius: '32px', boxShadow: '0 20px 40px -15px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.02)', transition: 'transform 0.3s, box-shadow 0.3s', cursor: 'pointer', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} onMouseOver={(e) => {e.currentTarget.style.transform='translateY(-8px)'; e.currentTarget.style.boxShadow='0 30px 60px -15px rgba(0,0,0,0.1)'}} onMouseOut={(e) => {e.currentTarget.style.transform='translateY(0)'; e.currentTarget.style.boxShadow='0 20px 40px -15px rgba(0,0,0,0.05)'}}>
                             <div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -347,14 +379,24 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                                     <span style={{ fontSize: '1.5rem' }}>📍</span> <span style={{ color: '#111827' }}>{item.delivery_location_name || 'Unknown'}</span>
                                 </p>
                             </div>
-                            <button 
-                                onClick={() => acceptOrder(item)}
-                                style={{ width: '100%', background: '#004F32', color: 'white', border: 'none', padding: '1.25rem', borderRadius: '99px', cursor: 'pointer', fontWeight: 800, fontSize: '1.2rem', transition: 'all 0.2s', boxShadow: '0 10px 25px -5px rgba(0,79,50,0.3)' }}
-                                onMouseOver={(e) => {e.currentTarget.style.background='#10B981'; e.currentTarget.style.color='#004F32'}} 
-                                onMouseOut={(e) => {e.currentTarget.style.background='#004F32'; e.currentTarget.style.color='white'}}
-                            >
-                                Accept Delivery Now
-                            </button>
+                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                <button 
+                                    onClick={() => acceptOrder(item)}
+                                    style={{ flex: 1, background: '#004F32', color: 'white', border: 'none', padding: '1.1rem', borderRadius: '99px', cursor: 'pointer', fontWeight: 800, fontSize: '1.05rem', transition: 'all 0.2s', boxShadow: '0 10px 25px -5px rgba(0,79,50,0.3)' }}
+                                    onMouseOver={(e) => {e.currentTarget.style.background='#10B981'; e.currentTarget.style.color='#004F32'}} 
+                                    onMouseOut={(e) => {e.currentTarget.style.background='#004F32'; e.currentTarget.style.color='white'}}
+                                >
+                                    ✓ Accept
+                                </button>
+                                <button 
+                                    onClick={() => declineOrder(item.id)}
+                                    style={{ padding: '1.1rem 1.5rem', background: 'white', color: '#EF4444', border: '2px solid #FEE2E2', borderRadius: '99px', cursor: 'pointer', fontWeight: 800, fontSize: '1.05rem', transition: 'all 0.2s' }}
+                                    onMouseOver={(e) => {e.currentTarget.style.background='#FEF2F2'; e.currentTarget.style.borderColor='#EF4444'}}
+                                    onMouseOut={(e) => {e.currentTarget.style.background='white'; e.currentTarget.style.borderColor='#FEE2E2'}}
+                                >
+                                    ✕
+                                </button>
+                            </div>
                         </div>
                     ))
                 )}

@@ -299,7 +299,10 @@ app.post('/api/requests', async (req, res) => {
 // Update Request Status / Accept Delivery
 app.put('/api/requests/:id', async (req, res) => {
     const { status, rider_id } = req.body;
-    if (rider_id) {
+    if (status === 'request_sent') {
+        // Rider dropped the delivery — clear rider_id so it goes back to queue
+        await db.run(`UPDATE requests SET status = ?, rider_id = NULL WHERE id = ?`, [status, req.params.id]);
+    } else if (rider_id) {
         await db.run(`UPDATE requests SET status = ?, rider_id = ? WHERE id = ?`, [status, rider_id, req.params.id]);
     } else {
         await db.run(`UPDATE requests SET status = ? WHERE id = ?`, [status, req.params.id]);
