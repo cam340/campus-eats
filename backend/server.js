@@ -180,6 +180,7 @@ async function initDB() {
     try { await db.run("ALTER TABLE users ADD COLUMN selfie_photo TEXT"); } catch(e) {}
     try { await db.run("ALTER TABLE requests ADD COLUMN cafeteria TEXT"); } catch(e) {}
     try { await db.run("ALTER TABLE requests ADD COLUMN estimated_price REAL DEFAULT 0"); } catch(e) {}
+    try { await db.run("ALTER TABLE requests ADD COLUMN rider_id TEXT"); } catch(e) {}
 
     // SEED DEFAULT ADMIN
     await db.run(`INSERT OR IGNORE INTO users (id, email, password, name, full_name, role) 
