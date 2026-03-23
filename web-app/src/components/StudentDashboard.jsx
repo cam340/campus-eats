@@ -89,19 +89,28 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
         <div style={{ backgroundColor: '#F9FAFB', minHeight: '100vh' }}>
             <style>
                 {`
-                @media (max-width: 600px) {
-                    .student-top-header { padding: 1rem 4% !important; }
-                    .student-top-header > div:first-child { font-size: 1.35rem !important; }
-                    .student-header-actions { gap: 0.75rem !important; }
-                    .student-header-actions > * { font-size: 0.85rem !important; }
+                @media (max-width: 768px) {
+                    .student-top-header { padding: 0.75rem 4% !important; }
+                    .student-top-header > div:first-child { font-size: 1.25rem !important; gap: 0.35rem !important; }
+                    .student-top-header > div:first-child > div { width: 28px !important; height: 28px !important; font-size: 1rem !important; }
+                    .student-header-actions { gap: 0.5rem !important; }
+                    .location-pill { padding: 0.4rem 0.75rem !important; font-size: 0.85rem !important; }
+                    .location-pill select { font-size: 0.85rem !important; }
+                    .menu-btn { padding: 0.45rem 0.75rem !important; font-size: 0.95rem !important; border-radius: 10px !important; }
+                    .menu-btn-label { display: none !important; }
                     .student-history-container { padding: 2rem 4% !important; }
                     .student-history-head { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
                     .student-history-head h2 { font-size: 2rem !important; }
                     .student-history-head button { width: 100% !important; }
                     .student-history-card { flex-direction: column !important; align-items: flex-start !important; gap: 1.25rem !important; padding: 1.5rem !important; border-radius: 24px !important; }
-                    .student-history-card-left { gap: 1.25rem !important; }
+                    .student-history-card-left { gap: 1rem !important; }
                     .student-history-card-right { width: 100%; display: flex; align-items: center; justify-content: space-between; text-align: left !important; }
-                    .student-menu-dropdown { right: 4% !important; top: 60px !important; }
+                    .student-menu-dropdown { right: 4% !important; top: 55px !important; min-width: 200px !important; }
+                }
+                @media (max-width: 480px) {
+                    .student-top-header > div:first-child { font-size: 1.1rem !important; }
+                    .location-pill { max-width: 160px !important; }
+                    .location-pill select { max-width: 100px !important; text-overflow: ellipsis !important; }
                 }
                 @keyframes menuSlideIn {
                     from { opacity: 0; transform: translateY(-10px) scale(0.95); }
@@ -115,7 +124,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                     CampusEats
                 </div>
                 <div className="student-header-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F3F4F6', padding: '0.5rem 1rem', borderRadius: '99px', fontSize: '1rem', fontWeight: 800 }}>
+                    <div className="location-pill" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F3F4F6', padding: '0.5rem 1rem', borderRadius: '99px', fontSize: '1rem', fontWeight: 800 }}>
                         📍 
                         <select 
                             value={locationId} 
@@ -130,6 +139,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                     </div>
                     <div style={{ position: 'relative' }}>
                         <button 
+                            className="menu-btn"
                             onClick={() => setShowMenu(!showMenu)} 
                             style={{ background: showMenu ? '#004F32' : 'white', color: showMenu ? 'white' : '#111827', border: '2px solid #E5E7EB', padding: '0.5rem 1rem', borderRadius: '14px', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem' }}
                         >
@@ -138,7 +148,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                                 <span style={{ width: '14px', height: '2.5px', background: showMenu ? 'white' : '#111827', borderRadius: '2px', transition: 'all 0.2s' }}></span>
                                 <span style={{ width: '18px', height: '2.5px', background: showMenu ? 'white' : '#111827', borderRadius: '2px', transition: 'all 0.2s' }}></span>
                             </span>
-                            Menu
+                            <span className="menu-btn-label">Menu</span>
                         </button>
                         {showMenu && (
                             <>
@@ -208,16 +218,26 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                 <div className="student-tracker-page" style={{ maxWidth: '700px', margin: '0 auto', padding: '3rem 5%', animation: 'slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
                     <style>
                         {`
-                        @media (max-width: 600px) {
+                        @media (max-width: 768px) {
                             .student-tracker-page { padding: 1.5rem 4% !important; }
-                            .student-tracker-page h1 { font-size: 2rem !important; }
-                            .tracker-main-card { padding: 1.5rem !important; border-radius: 28px !important; }
+                            .student-tracker-page h1 { font-size: 2.25rem !important; }
+                            .tracker-main-card { padding: 1.75rem !important; border-radius: 28px !important; }
                             .tracker-stepper { gap: 0 !important; }
+                            .tracker-stepper-circle { width: 36px !important; height: 36px !important; font-size: 1rem !important; }
                             .tracker-stepper span { font-size: 0.65rem !important; }
                             .tracker-detail-block { padding: 1.25rem !important; }
-                            .tracker-detail-grid { grid-template-columns: 1fr !important; }
-                            .tracker-status-banner { padding: 1.5rem !important; }
-                            .tracker-status-banner p:last-child { font-size: 1.5rem !important; }
+                            .tracker-detail-block p { font-size: 1.1rem !important; }
+                            .tracker-detail-grid { grid-template-columns: 1fr !important; text-align: left !important; }
+                            .tracker-detail-grid > div { text-align: left !important; }
+                            .tracker-status-banner { padding: 1.25rem !important; }
+                            .tracker-status-banner p:last-child { font-size: 1.35rem !important; }
+                            .tracker-chat-btn { padding: 1.1rem !important; font-size: 1rem !important; }
+                        }
+                        @media (max-width: 400px) {
+                            .student-tracker-page h1 { font-size: 1.75rem !important; letter-spacing: -1px !important; }
+                            .tracker-main-card { padding: 1.25rem !important; border-radius: 24px !important; }
+                            .tracker-stepper-circle { width: 30px !important; height: 30px !important; font-size: 0.85rem !important; border-width: 3px !important; }
+                            .tracker-stepper span { font-size: 0.55rem !important; }
                         }
                         `}
                     </style>
@@ -248,7 +268,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                                     <div style={{ position: 'absolute', top: '22px', left: '10%', width: `${Math.min((currentIdx / (stages.length - 1)) * 80, 80)}%`, height: '4px', background: '#10B981', zIndex: 1, borderRadius: '2px', transition: 'width 0.6s ease' }}></div>
                                     {labels.map((label, i) => (
                                         <div key={label} style={{ zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flex: 1 }}>
-                                            <div style={{ 
+                                            <div className="tracker-stepper-circle" style={{ 
                                                 width: '44px', height: '44px', borderRadius: '50%', 
                                                 background: i <= currentIdx ? '#10B981' : 'white', 
                                                 border: `4px solid ${i <= currentIdx ? '#10B981' : '#E5E7EB'}`, 
@@ -296,6 +316,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                         {/* Chat Button */}
                         {activeRequest.status !== 'request_sent' && (
                             <button 
+                                className="tracker-chat-btn"
                                 onClick={() => onOpenChat(activeRequest.id)}
                                 style={{ width: '100%', background: '#111827', color: 'white', border: 'none', padding: '1.5rem', borderRadius: '99px', cursor: 'pointer', fontWeight: 800, fontSize: '1.15rem', transition: 'all 0.2s', boxShadow: '0 10px 25px -5px rgba(17,24,39,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem' }}
                                 onMouseOver={(e) => {e.currentTarget.style.transform='translateY(-3px)'}} 
@@ -312,10 +333,18 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                 <main style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem 5%' }}>
                     <style>
                         {`
-                        @media (max-width: 900px) {
+                        @media (max-width: 768px) {
                             .hero-title { font-size: 2.5rem !important; margin-bottom: 1.5rem !important; }
-                            .submit-btn { width: 100% !important; padding: 1rem !important; margin-top: 1.5rem; }
-                            .form-footer { flex-direction: column !important; align-items: flex-start !important; gap: 1.5rem !important; }
+                            .order-form { padding: 1.5rem !important; border-radius: 24px !important; }
+                            .order-form textarea { font-size: 1.05rem !important; padding: 1.1rem !important; border-radius: 18px !important; }
+                            .food-tags { gap: 0.5rem !important; }
+                            .food-tags button { padding: 0.5rem 0.9rem !important; font-size: 0.85rem !important; }
+                            .submit-btn { width: 100% !important; padding: 1rem !important; margin-top: 1.5rem; font-size: 1.1rem !important; }
+                            .form-footer { flex-direction: column !important; align-items: flex-start !important; gap: 1.5rem !important; padding: 1.25rem !important; }
+                        }
+                        @media (max-width: 480px) {
+                            .hero-title { font-size: 2rem !important; letter-spacing: -1px !important; }
+                            .order-form { padding: 1.25rem !important; }
                         }
                         `}
                     </style>
@@ -323,7 +352,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                         What are you <br/><span style={{ color: '#10B981' }}>craving</span> today?
                     </h1>
                     
-                    <form onSubmit={handleSubmit} style={{ background: 'white', padding: '2.5rem', borderRadius: '32px', boxShadow: '0 20px 40px -15px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.03)' }}>
+                    <form className="order-form" onSubmit={handleSubmit} style={{ background: 'white', padding: '2.5rem', borderRadius: '32px', boxShadow: '0 20px 40px -15px rgba(0,0,0,0.05)', border: '1px solid rgba(0,0,0,0.03)' }}>
                         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
                             <div style={{ flex: 1, minWidth: '200px' }}>
                                 <label style={{ display: 'block', fontWeight: 800, marginBottom: '0.75rem', color: '#111827' }}>Pickup From</label>
@@ -361,7 +390,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                             onBlur={(e) => {e.target.style.background='#F9FAFB'; e.target.style.borderColor='#F3F4F6'}}
                         ></textarea>
 
-                        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+                        <div className="food-tags" style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
                             {['🍛 Jollof', '🍗 Fried Rice', '🥤 Cold Drinks', '🍔 Snacks', '🥘 Swallow'].map(tag => (
                                 <button 
                                     type="button" 
