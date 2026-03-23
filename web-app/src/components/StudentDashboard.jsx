@@ -106,6 +106,9 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                             ))}
                         </select>
                     </div>
+                    <button onClick={() => setShowHistory(true)} style={{ background: 'white', color: '#111827', border: '2px solid #E5E7EB', padding: '0.5rem 1.5rem', borderRadius: '99px', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onMouseOver={(e) => e.currentTarget.style.borderColor = '#10B981'} onMouseOut={(e) => e.currentTarget.style.borderColor = '#E5E7EB'}>
+                        📜 History
+                    </button>
                     {onOpenProfile && (
                         <button onClick={onOpenProfile} style={{ background: '#004F32', color: 'white', border: 'none', padding: '0.5rem 1.5rem', borderRadius: '99px', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             👤 Profile
@@ -116,8 +119,49 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                     </button>
                 </div>
             </header>
-
-            <main className="dashboard-main" style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem 5%', display: 'flex', gap: '2rem', flexDirection: 'row', flexWrap: 'wrap' }}>
+            
+            {showHistory ? (
+                <div style={{ padding: '4rem 5%', maxWidth: '1200px', margin: '0 auto', animation: 'slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3rem' }}>
+                        <div>
+                            <h2 style={{ fontSize: '3rem', fontWeight: 900, color: '#111827', margin: 0, letterSpacing: '-1.5px' }}>Order History</h2>
+                            <p style={{ color: '#6B7280', margin: '0.5rem 0 0', fontSize: '1.25rem' }}>Your past campus cravings and deliveries.</p>
+                        </div>
+                        <button onClick={() => setShowHistory(false)} style={{ background: '#004F32', color: 'white', border: 'none', padding: '1rem 2.5rem', borderRadius: '99px', fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer', boxShadow: '0 10px 25px -5px rgba(0,79,50,0.3)' }}>Back to Order</button>
+                    </div>
+                    
+                    <div style={{ display: 'grid', gap: '1.5rem' }}>
+                        {history.length === 0 ? (
+                            <div style={{ textAlign: 'center', padding: '6rem', background: 'white', borderRadius: '40px', border: '2px dashed #E5E7EB' }}>
+                                <div style={{ fontSize: '4rem', marginBottom: '1.5rem' }}>🥘</div>
+                                <h3 style={{ fontSize: '2rem', fontWeight: 900, color: '#111827', margin: '0 0 1rem' }}>No orders yet</h3>
+                                <p style={{ color: '#6B7280', fontSize: '1.25rem', fontWeight: 500 }}>Drop your first craving to start your history!</p>
+                            </div>
+                        ) : (
+                            history.map(item => (
+                                <div key={item.id} style={{ background: 'white', padding: '2.5rem', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 10px 20px -5px rgba(0,0,0,0.03)' }}>
+                                    <div style={{ display: 'flex', gap: '2.5rem', alignItems: 'center' }}>
+                                        <div style={{ background: '#F3F4F6', padding: '1.25rem', borderRadius: '20px', textAlign: 'center', minWidth: '90px' }}>
+                                            <p style={{ margin: 0, fontSize: '0.85rem', fontWeight: 800, color: '#6B7280', textTransform: 'uppercase' }}>{new Date(item.created_at).toLocaleDateString('en-US', { month: 'short' })}</p>
+                                            <p style={{ margin: 0, fontSize: '1.75rem', fontWeight: 900, color: '#111827' }}>{new Date(item.created_at).getDate()}</p>
+                                        </div>
+                                        <div>
+                                            <p style={{ margin: '0 0 0.5rem', color: '#10B981', fontWeight: 800, fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{item.cafeteria}</p>
+                                            <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900, color: '#111827' }}>{item.request_text}</h3>
+                                            <p style={{ margin: '0.75rem 0 0', color: '#6B7280', fontSize: '1rem', fontWeight: 600 }}>Dropped at: 📍 {item.delivery_location_name}</p>
+                                        </div>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                        <p style={{ margin: 0, fontSize: '1.75rem', fontWeight: 900, color: '#111827' }}>₦{( (item.estimated_price || 0) + (item.fee || 0) ).toLocaleString()}</p>
+                                        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: item.status === 'delivered' ? '#10B981' : '#F59E0B', background: item.status === 'delivered' ? '#E6F5ED' : '#FFFBEB', padding: '0.5rem 1rem', borderRadius: '99px', display: 'inline-block', marginTop: '0.75rem', textTransform: 'uppercase' }}>{item.status}</span>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            ) : (
+                <main className="dashboard-main" style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem 5%', display: 'flex', gap: '2rem', flexDirection: 'row', flexWrap: 'wrap' }}>
                 <style>
                     {`
                     @media (max-width: 900px) {
@@ -262,7 +306,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                         </div>
                     )}
                 </div>
-            </main>
+            )}
         </div>
     );
 }

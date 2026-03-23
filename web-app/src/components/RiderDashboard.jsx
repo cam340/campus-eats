@@ -192,11 +192,61 @@ export default function RiderDashboard({ userId, onOpenChat }) {
                     <h2 style={{ fontSize: '3rem', fontWeight: 900, color: '#111827', margin: 0, letterSpacing: '-1.5px' }}>Live Order Queue</h2>
                     <p style={{ color: '#6B7280', margin: '0.5rem 0 0', fontSize: '1.25rem', fontWeight: 500 }}>Select a delivery to start earning instantly.</p>
                 </div>
-                <div style={{ background: '#E6F5ED', color: '#004F32', padding: '0.75rem 1.5rem', borderRadius: '99px', fontSize: '1.1rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ width: '10px', height: '10px', background: '#10B981', borderRadius: '50%', display: 'inline-block' }}></span>
-                    Online
+                <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <button onClick={() => setShowHistory(true)} style={{ background: 'white', color: '#111827', border: '2px solid #E5E7EB', padding: '0.75rem 1.5rem', borderRadius: '99px', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onMouseOver={(e) => e.currentTarget.style.borderColor = '#10B981'} onMouseOut={(e) => e.currentTarget.style.borderColor = '#E5E7EB'}>
+                        📜 View My History
+                    </button>
+                    <div style={{ background: '#E6F5ED', color: '#004F32', padding: '0.75rem 1.5rem', borderRadius: '99px', fontSize: '1.1rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ width: '10px', height: '10px', background: '#10B981', borderRadius: '50%', display: 'inline-block' }}></span>
+                        Online
+                    </div>
                 </div>
             </div>
+
+            {showHistory && (
+                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: '#F9FAFB', zIndex: 1000, padding: '4rem 5%', overflowY: 'auto', animation: 'slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
+                    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4rem' }}>
+                            <div>
+                                <h2 style={{ fontSize: '3.5rem', fontWeight: 900, color: '#111827', margin: 0, letterSpacing: '-2px' }}>Delivery History</h2>
+                                <p style={{ color: '#6B7280', margin: '0.5rem 0 0', fontSize: '1.35rem', fontWeight: 500 }}>Track your successful missions and total earnings.</p>
+                            </div>
+                            <button onClick={() => setShowHistory(false)} style={{ background: '#004F32', color: 'white', border: 'none', padding: '1.25rem 3rem', borderRadius: '99px', fontWeight: 900, fontSize: '1.2rem', cursor: 'pointer', boxShadow: '0 15px 30px -5px rgba(0,79,50,0.3)' }}>Return to Queue</button>
+                        </div>
+
+                        <div style={{ display: 'grid', gap: '2rem' }}>
+                            {history.length === 0 ? (
+                                <div style={{ textAlign: 'center', padding: '8rem 2rem', background: 'white', borderRadius: '40px', border: '2px dashed #E5E7EB' }}>
+                                    <div style={{ fontSize: '5rem', marginBottom: '2rem' }}>🏎️</div>
+                                    <h3 style={{ fontSize: '2.5rem', fontWeight: 900, color: '#111827', margin: '0 0 1rem' }}>No missions yet</h3>
+                                    <p style={{ color: '#6B7280', fontSize: '1.25rem', fontWeight: 500 }}>Accept your first delivery to start building your record!</p>
+                                </div>
+                            ) : (
+                                history.map(item => (
+                                    <div key={item.id} style={{ background: 'white', padding: '2.5rem', borderRadius: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', border: '1px solid rgba(0,0,0,0.03)', boxShadow: '0 10px 30px -5px rgba(0,0,0,0.04)' }}>
+                                        <div style={{ display: 'flex', gap: '3rem', alignItems: 'center' }}>
+                                            <div style={{ background: '#E6F5ED', color: '#004F32', padding: '1.5rem', borderRadius: '24px', textAlign: 'center', minWidth: '100px' }}>
+                                                <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800, color: '#10B981', textTransform: 'uppercase' }}>{new Date(item.created_at).toLocaleDateString('en-US', { month: 'short' })}</p>
+                                                <p style={{ margin: 0, fontSize: '2rem', fontWeight: 900 }}>{new Date(item.created_at).getDate()}</p>
+                                            </div>
+                                            <div>
+                                                <p style={{ margin: '0 0 0.5rem', color: '#10B981', fontWeight: 800, fontSize: '1rem', textTransform: 'uppercase' }}>PICKUP: {item.cafeteria}</p>
+                                                <h3 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 900, color: '#111827' }}>{item.request_text}</h3>
+                                                <p style={{ margin: '1rem 0 0', color: '#6B7280', fontSize: '1.1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>📍 {item.delivery_location_name}</p>
+                                            </div>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <p style={{ margin: 0, fontSize: '1rem', color: '#6B7280', fontWeight: 800, letterSpacing: '1px' }}>EARNING</p>
+                                            <p style={{ margin: '0.25rem 0 0', fontSize: '2rem', fontWeight: 900, color: '#111827' }}>₦{(item.fee || 0).toLocaleString()}</p>
+                                            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#10B981', background: '#E6F5ED', padding: '0.5rem 1.25rem', borderRadius: '99px', display: 'inline-block', marginTop: '1rem' }}>DELIVERED</span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                 </div>
+            )}
 
             <div className="queue-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '2.5rem' }}>
                 {available.length === 0 ? (
