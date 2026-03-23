@@ -40,6 +40,7 @@ export const api = {
   },
   requests: {
     getStudentActive: (studentId) => client(`requests/student/${studentId}`),
+    getRiderActive: (riderId) => client(`requests/rider/${riderId}`),
     getAvailable: () => client('requests/available'),
     create: (data) => client('requests', { body: data }),
     updateStatus: (requestId, status, riderId = null) => 

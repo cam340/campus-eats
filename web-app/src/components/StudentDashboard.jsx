@@ -32,10 +32,11 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
 
         const handleRequestUpdated = (updatedReq) => {
             if (updatedReq.student_id === userId) {
-                if (updatedReq.status !== 'delivered') {
-                    setActiveRequest(updatedReq);
+                if (updatedReq.status === 'delivered') {
+                    toast("Order Delivered! Enjoy your meal 🥘", "success");
+                    setActiveRequest(null);
                 } else {
-                    setActiveRequest(null); // Clear once delivered
+                    setActiveRequest(updatedReq);
                 }
             }
         };

@@ -6,15 +6,22 @@ export default function RiderDashboard({ userId, onOpenChat }) {
     const [activeDelivery, setActiveDelivery] = useState(null);
 
     useEffect(() => {
-        const fetchAvailable = async () => {
+        const fetchInitial = async () => {
             try {
-                const data = await api.requests.getAvailable();
-                setAvailable(data);
+                // 1. Fetch available pool
+                const av = await api.requests.getAvailable();
+                setAvailable(av);
+
+                // 2. Check if rider has an active assignment (Persistence)
+                const active = await api.requests.getRiderActive(userId);
+                if (active && active.length > 0) {
+                    setActiveDelivery(active[0]);
+                }
             } catch (err) {
-                console.error("Failed to fetch available:", err);
+                console.error("Failed to fetch initial data:", err);
             }
         };
-        fetchAvailable();
+        fetchInitial();
 
         const handleNewReq = (req) => {
             setAvailable(prev => [req, ...prev]);
@@ -23,6 +30,14 @@ export default function RiderDashboard({ userId, onOpenChat }) {
         const handleReqUpdate = (req) => {
             if (req.status !== 'request_sent') {
                 setAvailable(prev => prev.filter(r => r.id !== req.id));
+            }
+            // If our active delivery was updated elsewhere (e.g. by admin or chat)
+            if (activeDelivery && req.id === activeDelivery.id) {
+                if (req.status === 'delivered') {
+                    setActiveDelivery(null);
+                } else {
+                    setActiveDelivery(req);
+                }
             }
         };
 
@@ -33,7 +48,7 @@ export default function RiderDashboard({ userId, onOpenChat }) {
             socket.off('new_request', handleNewReq);
             socket.off('request_updated', handleReqUpdate);
         };
-    }, []);
+    }, [userId, activeDelivery?.id]);
 
     const acceptOrder = async (order) => {
         try {
@@ -44,25 +59,55 @@ export default function RiderDashboard({ userId, onOpenChat }) {
         }
     };
 
+    const getNextStatusInfo = () => {
+        const flow = {
+            'accepted': { label: "I'm at the Cafeteria", next: 'at_cafeteria' },
+            'at_cafeteria': { label: "I'm on my way", next: 'on_way' },
+            'on_way': { label: "Order Delivered", next: 'delivered' }
+        };
+        return flow[activeDelivery.status] || { label: "Completed", next: null };
+    };
+
     const advanceStatus = async () => {
-        const statuses = ['accepted', 'at_cafeteria', 'on_way', 'delivered'];
-        const currentIdx = statuses.indexOf(activeDelivery.status);
-        
-        if (currentIdx < statuses.length - 1) {
-            const nextStatus = statuses[currentIdx + 1];
-            try {
-                const updated = await api.requests.updateStatus(activeDelivery.id, nextStatus);
-                setActiveDelivery(updated);
-            } catch (error) {
-                console.error(error);
-            }
-        } else {
+        const { next } = getNextStatusInfo();
+        if (!next) {
             setActiveDelivery(null);
+            return;
+        }
+
+        try {
+            const updated = await api.requests.updateStatus(activeDelivery.id, next);
+            if (next === 'delivered') {
+                setActiveDelivery(null);
+            } else {
+                setActiveDelivery(updated);
+            }
+        } catch (error) {
+            console.error(error);
         }
     };
 
-    // ... exactly the same UI output logic ...
+    const Stepper = ({ currentStatus }) => {
+        const stages = ['accepted', 'at_cafeteria', 'on_way', 'delivered'];
+        const currentIdx = stages.indexOf(currentStatus);
+        
+        return (
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3rem', position: 'relative' }}>
+                <div style={{ position: 'absolute', top: '15px', left: 0, right: 0, height: '4px', background: '#E5E7EB', zIndex: 0 }}></div>
+                <div style={{ position: 'absolute', top: '15px', left: 0, width: `${(currentIdx / 3) * 100}%`, height: '4px', background: '#10B981', zIndex: 1, transition: 'width 0.4s' }}></div>
+                
+                {['Accepted', 'In Kitchen', 'Delivery', 'Success'].map((label, i) => (
+                    <div key={label} style={{ zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '30px', height: '30px', borderRadius: '50%', background: i <= currentIdx ? '#10B981' : 'white', border: `4px solid ${i <= currentIdx ? '#10B981' : '#E5E7EB'}`, transition: 'all 0.3s' }}></div>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: i <= currentIdx ? '#004F32' : '#9CA3AF' }}>{label}</span>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
     if (activeDelivery) {
+        const { label } = getNextStatusInfo();
         return (
             <div style={{ animation: 'slideUpFade 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
@@ -72,7 +117,9 @@ export default function RiderDashboard({ userId, onOpenChat }) {
                     </div>
                 </div>
                 
-                <div style={{ background: 'white', padding: '3.5rem', borderRadius: '32px', boxShadow: '0 30px 60px -15px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.03)' }}>
+                <div style={{ background: 'white', padding: '3.5rem', borderRadius: '40px', boxShadow: '0 30px 60px -15px rgba(0,0,0,0.08)', border: '1px solid rgba(0,0,0,0.03)' }}>
+                    <Stepper currentStatus={activeDelivery.status} />
+
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem' }}>
                         <h3 style={{ margin: 0, color: '#6B7280', fontSize: '1.25rem', fontWeight: 600 }}>Order ID: <span style={{ color: '#111827' }}>{activeDelivery.id.substring(4,10)}</span></h3>
                         <div style={{ background: '#F9FAFB', color: '#111827', padding: '0.75rem 1.5rem', borderRadius: '99px', fontSize: '1rem', fontWeight: 800 }}>
@@ -107,7 +154,7 @@ export default function RiderDashboard({ userId, onOpenChat }) {
                             onMouseOver={(e) => {e.currentTarget.style.transform='translateY(-3px)'}} 
                             onMouseOut={(e) => {e.currentTarget.style.transform='translateY(0)'}}
                         >
-                            Complete Stage & Advance ➔
+                            {label} ➔
                         </button>
                         <button 
                             onClick={() => onOpenChat(activeDelivery.id)}

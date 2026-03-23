@@ -251,6 +251,17 @@ app.get('/api/requests/student/:id', async (req, res) => {
     res.json(reqs);
 });
 
+// Rider API: Get Active Request (assigned to them)
+app.get('/api/requests/rider/:id', async (req, res) => {
+    const reqs = await db.all(`
+        SELECT r.*, l.name as delivery_location_name 
+        FROM requests r 
+        LEFT JOIN delivery_locations l ON r.delivery_location_id = l.id 
+        WHERE r.rider_id = ? AND r.status != 'delivered'
+        ORDER BY r.created_at DESC LIMIT 1`, [req.params.id]);
+    res.json(reqs);
+});
+
 // Rider API: Get Available Requests
 app.get('/api/requests/available', async (req, res) => {
     const reqs = await db.all(`
