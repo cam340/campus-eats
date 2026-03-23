@@ -306,7 +306,8 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                         </div>
                     )}
                 </div>
-            )}
-        </div>
-    );
+            </main>
+        )}
+    </div>
+);
 }
