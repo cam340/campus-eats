@@ -14,6 +14,12 @@ app.use(express.json());
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
+// REQ LOGGER
+app.use((req, res, next) => {
+    console.log(`📡 [${req.method}] ${req.path}`);
+    next();
+});
+
 let db;
 
 // Turso/SQLite Compatibility Wrapper
@@ -123,6 +129,10 @@ async function initDB() {
 }
 
 // REST ENDPOINTS
+app.get('/api/auth/signup', (req, res) => {
+    res.status(405).json({ error: "Please use POST to sign up. If you are seeing this in the browser, it is expected. If you see this in the app, the frontend is sending the wrong method." });
+});
+
 app.post('/api/auth/signup', async (req, res) => {
     console.log("Signup attempt:", req.body.email, req.body.role);
     try {
