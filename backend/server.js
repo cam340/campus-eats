@@ -162,6 +162,12 @@ async function initDB() {
     if (locs.length === 0) {
         await db.run("INSERT INTO delivery_locations (name, description, fee) VALUES ('Joseph Hall', 'Male Undergraduate Hostel', 1.50), ('Levi Hall', 'Male Undergraduate Hostel', 1.50), ('Esme Hall', 'Female Undergraduate Hostel', 2.00), ('Babcock Library', 'Central Study Area', 0.50)");
     }
+
+    // SEED DEFAULT ADMIN
+    await db.run(`INSERT OR IGNORE INTO users (id, email, password, name, full_name, role) 
+                  VALUES ('admin_01', 'admin@campuseats.com', 'admin123', 'System Admin', 'System Administrator', 'admin')`);
+    
+    console.log("✅ Database initialized successfully (Turso/Local)");
 }
 
 // REST ENDPOINTS
