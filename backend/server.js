@@ -59,11 +59,13 @@ class Database {
 }
 
 async function initDB() {
-    const url = process.env.TURSO_URL;
+    let url = process.env.TURSO_URL;
     const authToken = process.env.TURSO_AUTH_TOKEN;
 
     if (url) {
-        console.log("☁️  CONNECTING TO TURSO CLOUD SQLITE...");
+        // Normalize URL if needed (remove trailing slashes, Ensure protocol)
+        url = url.trim().replace(/\/$/, ""); 
+        console.log(`☁️  CONNECTING TO TURSO CLOUD SQLITE: ${url.split('@')[0]}...`);
         const client = createClient({ url, authToken });
         db = new Database(client, true);
     } else {
@@ -313,7 +315,12 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 3001;
 
 initDB().then(() => {
+    console.log("✅ DATABASE INITIALIZED SUCCESSFULLY");
     server.listen(PORT, () => {
         console.log(`🚀 CAMPUS-EATS BACKEND RUNNING ON PORT ${PORT} 🚀`);
     });
-}).catch(console.error);
+}).catch(err => {
+    console.error("❌ CRITICAL ERROR DURING STARTUP:");
+    console.error(err);
+    process.exit(1);
+});
