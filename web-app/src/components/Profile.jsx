@@ -19,26 +19,32 @@ export default function Profile({ userId, role, onClose }) {
         });
     }, [userId]);
 
-    const handleSave = async () => {
+    const handleSave = async (extraData = {}) => {
         setSaving(true);
         try {
-            const updated = await api.profile.update(userId, {
+            const payload = {
                 full_name: form.full_name,
                 phone_number: form.phone_number,
                 hostel_name: form.hostel_name,
                 room_number: form.room_number,
-            });
+                ...extraData
+            };
+            const updated = await api.profile.update(userId, payload);
             setProfile(updated);
             // Update localStorage with new name
             const stored = JSON.parse(localStorage.getItem('campus_user') || '{}');
             localStorage.setItem('campus_user', JSON.stringify({ ...stored, full_name: updated.full_name, name: updated.name }));
             setEditing(false);
-            toast('Profile updated successfully!', 'success');
+            toast('Updated successfully!', 'success');
         } catch (e) {
-            toast('Failed to update profile', 'error');
+            toast('Failed to update', 'error');
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleDocUpload = (field, base64) => {
+        handleSave({ [field]: base64 });
     };
 
     if (!profile) return (
@@ -167,6 +173,76 @@ export default function Profile({ userId, role, onClose }) {
                     )}
                 </div>
             </div>
+
+            {/* IDENTITY VERIFICATION (Riders Only) */}
+            {role === 'rider' && (
+                <div style={{
+                    marginTop: '2.5rem', background: '#F0FDF4', padding: '2.5rem',
+                    borderRadius: '24px', border: '2px dashed #10B981',
+                }}>
+                    <h3 style={{ margin: '0 0 1rem', fontSize: '1.5rem', fontWeight: 900, color: '#004F32' }}>🛡️ Identity Verification</h3>
+                    <p style={{ color: '#065F46', fontWeight: 600, marginBottom: '2rem', lineHeight: 1.5 }}>
+                        To accept deliveries, you must upload a clear photo of your **Student ID** and a **Selfie**. 
+                        Our team will verify these within 24 hours.
+                    </p>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+                        <DocUpload 
+                            label="Student ID Card" 
+                            field="id_card_photo" 
+                            current={profile.id_card_photo} 
+                            onUpload={(val) => handleDocUpload('id_card_photo', val)} 
+                        />
+                        <DocUpload 
+                            label="Selfie Photo" 
+                            field="selfie_photo" 
+                            current={profile.selfie_photo} 
+                            onUpload={(val) => handleDocUpload('selfie_photo', val)} 
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+
+function DocUpload({ label, current, onUpload }) {
+    const handleFile = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => onUpload(reader.result);
+        reader.readAsDataURL(file);
+    };
+
+    return (
+        <div>
+            <label style={{ display: 'block', fontWeight: 800, marginBottom: '0.75rem', color: '#065F46', fontSize: '0.9rem' }}>{label}</label>
+            <div style={{
+                position: 'relative', height: '200px', background: '#E6F5ED',
+                borderRadius: '16px', overflow: 'hidden', border: '2px solid #A7F3D0',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+            }}>
+                {current ? (
+                    <img src={current} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                    <div style={{ textAlign: 'center', color: '#10B981' }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📸</div>
+                        <p style={{ margin: 0, fontWeight: 700, fontSize: '0.85rem' }}>Click to upload</p>
+                    </div>
+                )}
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFile}
+                    style={{
+                        position: 'absolute', top: 0, left: 0, width: '100%',
+                        height: '100%', opacity: 0, cursor: 'pointer'
+                    }}
+                />
+            </div>
+            {current && <p style={{ marginTop: '0.5rem', color: '#10B981', fontWeight: 800, fontSize: '0.8rem', textAlign: 'center' }}>✓ Uploaded</p>}
+        </div>
+    );
+}
+

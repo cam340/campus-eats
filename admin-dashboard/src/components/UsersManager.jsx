@@ -87,18 +87,18 @@ export default function UsersManager() {
               {!prefs.is_verified && (
                   <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '20px', marginBottom: '25px' }}>
                       <h3 style={{ margin: '0 0 15px 0', color: '#92400e' }}>Account Verification</h3>
-                      { (prefs.id_card_url || prefs.selfie_url) ? (
+                      {(selectedUser.id_card_photo || selectedUser.selfie_photo || prefs.id_card_url || prefs.selfie_url) ? (
                           <div style={{ display: 'flex', gap: '15px', marginBottom: '15px' }}>
-                              {prefs.id_card_url && (
+                              {(selectedUser.id_card_photo || prefs.id_card_url) && (
                                   <div style={{ textAlign: 'center' }}>
                                       <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#78716c', margin: '0 0 5px' }}>ID Card</p>
-                                      <img src={prefs.id_card_url} alt="ID" style={{ width: '180px', height: '120px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #e5e7eb' }} />
+                                      <img src={selectedUser.id_card_photo || prefs.id_card_url} alt="ID" style={{ width: '180px', height: '120px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #e5e7eb' }} />
                                   </div>
                               )}
-                              {prefs.selfie_url && (
+                              {(selectedUser.selfie_photo || prefs.selfie_url) && (
                                   <div style={{ textAlign: 'center' }}>
                                       <p style={{ fontSize: '12px', fontWeight: 'bold', color: '#78716c', margin: '0 0 5px' }}>Selfie</p>
-                                      <img src={prefs.selfie_url} alt="Selfie" style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #e5e7eb' }} />
+                                      <img src={selectedUser.selfie_photo || prefs.selfie_url} alt="Selfie" style={{ width: '120px', height: '120px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #e5e7eb' }} />
                                   </div>
                               )}
                           </div>

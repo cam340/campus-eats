@@ -137,7 +137,9 @@ async function initDB() {
             phone_number TEXT,
             hostel_name TEXT,
             room_number TEXT,
-            preferences TEXT DEFAULT '{}'
+            preferences TEXT DEFAULT '{}',
+            id_card_photo TEXT,
+            selfie_photo TEXT
         );
         CREATE TABLE IF NOT EXISTS delivery_locations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -170,6 +172,14 @@ async function initDB() {
     if (locs.length === 0) {
         await db.run("INSERT INTO delivery_locations (name, description, fee) VALUES ('Joseph Hall', 'Male Undergraduate Hostel', 1.50), ('Levi Hall', 'Male Undergraduate Hostel', 1.50), ('Esme Hall', 'Female Undergraduate Hostel', 2.00), ('Babcock Library', 'Central Study Area', 0.50)");
     }
+
+    // MIGRATION: Add id_card_photo and selfie_photo if they don't exist
+    try {
+        await db.run("ALTER TABLE users ADD COLUMN id_card_photo TEXT");
+    } catch(e) {}
+    try {
+        await db.run("ALTER TABLE users ADD COLUMN selfie_photo TEXT");
+    } catch(e) {}
 
     // SEED DEFAULT ADMIN
     await db.run(`INSERT OR IGNORE INTO users (id, email, password, name, full_name, role) 
@@ -319,16 +329,24 @@ app.post('/api/messages', async (req, res) => {
 // ============================================
 app.get('/api/profile/:id', async (req, res) => {
     console.log(`Profile request for ID: ${req.params.id}`);
-    const user = await db.get("SELECT id, email, name, full_name, role, phone_number, hostel_name, room_number, preferences FROM users WHERE id = ?", [req.params.id]);
+    const user = await db.get("SELECT id, email, name, full_name, role, phone_number, hostel_name, room_number, preferences, id_card_photo, selfie_photo FROM users WHERE id = ?", [req.params.id]);
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json(user);
 });
 
 app.put('/api/profile/:id', async (req, res) => {
-    const { full_name, phone_number, hostel_name, room_number } = req.body;
+    const { full_name, phone_number, hostel_name, room_number, id_card_photo, selfie_photo } = req.body;
+    
+    // Explicitly handle photo updates if provided
+    if (id_card_photo || selfie_photo) {
+        if (id_card_photo) await db.run(`UPDATE users SET id_card_photo = ? WHERE id = ?`, [id_card_photo, req.params.id]);
+        if (selfie_photo) await db.run(`UPDATE users SET selfie_photo = ? WHERE id = ?`, [selfie_photo, req.params.id]);
+    }
+
     await db.run(`UPDATE users SET full_name = ?, name = ?, phone_number = ?, hostel_name = ?, room_number = ? WHERE id = ?`,
         [full_name, full_name, phone_number, hostel_name, room_number, req.params.id]);
-    const updated = await db.get("SELECT id, email, name, full_name, role, phone_number, hostel_name, room_number FROM users WHERE id = ?", [req.params.id]);
+        
+    const updated = await db.get("SELECT id, email, name, full_name, role, phone_number, hostel_name, room_number, id_card_photo, selfie_photo FROM users WHERE id = ?", [req.params.id]);
     res.json(updated);
 });
 
