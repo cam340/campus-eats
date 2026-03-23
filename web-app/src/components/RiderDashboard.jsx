@@ -79,7 +79,7 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
         }
 
         try {
-            const updated = await api.requests.updateStatus(activeDelivery.id, next);
+            const updated = await api.requests.updateStatus(activeDelivery.id, next, userId);
             if (next === 'delivered') {
                 setActiveDelivery(null);
                 api.requests.getRiderHistory(userId).then(setHistory).catch(console.error);
@@ -240,7 +240,7 @@ export default function RiderDashboard({ userId, onOpenChat, initialShowHistory 
                                         <div style={{ textAlign: 'right' }}>
                                             <p style={{ margin: 0, fontSize: '1rem', color: '#6B7280', fontWeight: 800, letterSpacing: '1px' }}>EARNING</p>
                                             <p style={{ margin: '0.25rem 0 0', fontSize: '2rem', fontWeight: 900, color: '#111827' }}>₦{(item.fee || 0).toLocaleString()}</p>
-                                            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#10B981', background: '#E6F5ED', padding: '0.5rem 1.25rem', borderRadius: '99px', display: 'inline-block', marginTop: '1rem' }}>DELIVERED</span>
+                                            <span style={{ fontSize: '0.9rem', fontWeight: 800, color: item.status === 'delivered' ? '#10B981' : '#F59E0B', background: item.status === 'delivered' ? '#E6F5ED' : '#FFFBEB', padding: '0.5rem 1.25rem', borderRadius: '99px', display: 'inline-block', marginTop: '1rem', textTransform: 'uppercase' }}>{item.status}</span>
                                         </div>
                                     </div>
                                 ))
