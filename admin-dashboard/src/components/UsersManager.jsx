@@ -75,11 +75,12 @@ export default function UsersManager() {
 
               {/* Academic & Residence Info */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '25px' }}>
-                  <InfoCard icon={<GraduationCap size={18} color="#6366f1" />} label="Department" value={prefs.department || 'Not Set'} />
-                  <InfoCard icon={<GraduationCap size={18} color="#6366f1" />} label="Level" value={prefs.level ? `${prefs.level} Level` : 'Not Set'} />
-                  <InfoCard icon={<Building size={18} color="#f59e0b" />} label="Hostel" value={prefs.hostel || 'Not Set'} />
-                  <InfoCard icon={<MapPin size={18} color="#f59e0b" />} label="Room Number" value={prefs.hostelNumber || 'Not Set'} />
+                  <InfoCard icon={<User size={18} color="#6366f1" />} label="Full Name" value={selectedUser.full_name || selectedUser.name || 'Not Set'} />
                   <InfoCard icon={<Mail size={18} color="#3b82f6" />} label="Email" value={selectedUser.email} />
+                  <InfoCard icon={<Building size={18} color="#f59e0b" />} label="Hostel" value={selectedUser.hostel_name || prefs.hostel || 'Not Set'} />
+                  <InfoCard icon={<MapPin size={18} color="#f59e0b" />} label="Room Number" value={selectedUser.room_number || prefs.hostelNumber || 'Not Set'} />
+                  <InfoCard icon={<Shield size={18} color="#10b981" />} label="Phone Number" value={selectedUser.phone_number || 'Not Set'} />
+                  <InfoCard icon={<GraduationCap size={18} color="#6366f1" />} label="Level" value={prefs.level ? `${prefs.level} Level` : 'Not Set'} />
                   {selectedUser.role === 'rider' && <InfoCard icon={<User size={18} color="#10b981" />} label="Transport" value={prefs.transportMethod || 'Not Set'} />}
               </div>
 
