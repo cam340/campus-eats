@@ -50,6 +50,7 @@ class Database {
         if (this.isLibsql) {
             const statements = sql.split(';').map(s => s.trim()).filter(s => s.length > 0);
             for (const s of statements) {
+                console.log("Executing SQL:", s.substring(0, 50) + "...");
                 await this.client.execute(s);
             }
             return;
@@ -63,8 +64,9 @@ async function initDB() {
     const authToken = process.env.TURSO_AUTH_TOKEN;
 
     if (url) {
-        // Normalize URL if needed (remove trailing slashes, Ensure protocol)
+        // Normalize URL if needed
         url = url.trim().replace(/\/$/, ""); 
+        // Force HTTPS if it's a Turso URL but using libsql prototcol (libsql client handles this internally usually)
         console.log(`☁️  CONNECTING TO TURSO CLOUD SQLITE: ${url.split('@')[0]}...`);
         const client = createClient({ url, authToken });
         db = new Database(client, true);
