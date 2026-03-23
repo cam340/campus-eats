@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../api';
+import { useToast } from './Toast';
 
 export default function LocationManager() {
   const [locations, setLocations] = useState([]);
+  const toast = useToast();
 
   const fetchLocations = async () => {
     try {
@@ -18,8 +20,12 @@ export default function LocationManager() {
   const toggleLocation = async (id, currentStatus) => {
     try {
         await api.admin.updateLocation(id, !currentStatus);
+        toast(`Location ${!currentStatus ? 'activated' : 'disabled'} successfully!`);
         fetchLocations();
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        console.error(e);
+        toast('Failed to update location', 'error');
+    }
   };
 
   return (

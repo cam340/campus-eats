@@ -23,6 +23,9 @@ async function client(endpoint, { body, method = 'GET' } = {}) {
 }
 
 export const api = {
+  auth: {
+    login: (credentials) => client('auth/login', { method: 'POST', body: credentials }),
+  },
   admin: {
     getStats: () => client('admin/stats'),
     getUsers: () => client('admin/users'),
@@ -30,5 +33,9 @@ export const api = {
     getLocations: () => client('admin/locations'),
     updateLocation: (id, is_active) => client(`admin/locations/${id}`, { method: 'PATCH', body: { is_active } }),
     getRequests: () => client('admin/requests'),
+  },
+  profile: {
+    get: (userId) => client(`profile/${userId}`),
+    update: (userId, data) => client(`profile/${userId}`, { method: 'PUT', body: data }),
   }
 };

@@ -3,6 +3,8 @@ import LocationManager from './components/LocationManager';
 import DashboardStats from './components/DashboardStats';
 import UsersManager from './components/UsersManager';
 import RequestsManager from './components/RequestsManager';
+import Profile from './components/Profile';
+import { ToastProvider } from './components/Toast';
 
 const GlobalStyles = () => (
   <style>{`
@@ -196,69 +198,107 @@ const GlobalStyles = () => (
 export default function App() {
   const [entered, setEntered] = useState(false);
   const [activeTab, setActiveTab] = useState('stats');
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('campus_user');
+    if (saved) {
+      setUser(JSON.parse(saved));
+      setEntered(true);
+    }
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem('campus_user');
+    setUser(null);
+    setEntered(false);
+  };
 
   if (!entered) {
     return (
-      <div className="landing-container">
-        <GlobalStyles />
-        <div className="bg-blob-green" />
-        <div className="bg-blob-orange" />
-        
-        <div className="hero-card">
-          <img src="/hero.png" alt="Fresh Food" className="hero-image" />
-          <div className="hero-content">
-            <h1 className="hero-title">Campus<span>Eats</span> Admin</h1>
-            <p className="hero-subtitle">
-              Manage the university's food delivery ecosystem with precision. 
-              Monitor real-time analytics, configure drop-off zones, and oversee rider fleets dynamically.
-            </p>
-            <button className="btn-enter" onClick={() => setEntered(true)}>
-              Enter Portal
-            </button>
+      <ToastProvider>
+        <div className="landing-container">
+          <GlobalStyles />
+          <div className="bg-blob-green" />
+          <div className="bg-blob-orange" />
+          
+          <div className="hero-card">
+            <img src="/hero.png" alt="Fresh Food" className="hero-image" />
+            <div className="hero-content">
+              <h1 className="hero-title">Campus<span>Eats</span> Admin</h1>
+              <p className="hero-subtitle">
+                Manage the university's food delivery ecosystem with precision. 
+                Monitor real-time analytics, configure drop-off zones, and oversee rider fleets dynamically.
+              </p>
+              <button className="btn-enter" onClick={() => setEntered(true)}>
+                Enter Portal
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </ToastProvider>
     );
   }
 
   return (
-    <div className="dashboard-layout">
-      <GlobalStyles />
-      <aside className="sidebar">
-        <h2 className="sidebar-title">Campus<span>Eats</span></h2>
-        <nav className="sidebar-nav">
-          <button 
-            onClick={() => setActiveTab('stats')} 
-            className={`nav-btn ${activeTab === 'stats' ? 'active' : ''}`}
-          >
-            Analytics Dashboard
+    <ToastProvider>
+      <div className="dashboard-layout">
+        <GlobalStyles />
+        <aside className="sidebar" style={{ display: 'flex', flexDirection: 'column' }}>
+          <h2 className="sidebar-title" style={{ cursor: 'pointer' }} onClick={() => setActiveTab('stats')}>
+            Campus<span>Eats</span>
+          </h2>
+          <nav className="sidebar-nav" style={{ flex: 1 }}>
+            <button 
+              onClick={() => setActiveTab('stats')} 
+              className={`nav-btn ${activeTab === 'stats' ? 'active' : ''}`}
+            >
+              Analytics Dashboard
+            </button>
+            <button 
+              onClick={() => setActiveTab('locations')} 
+              className={`nav-btn ${activeTab === 'locations' ? 'active' : ''}`}
+            >
+              Delivery Locations
+            </button>
+            <button 
+              onClick={() => setActiveTab('users')} 
+              className={`nav-btn ${activeTab === 'users' ? 'active' : ''}`}
+            >
+              User Verification
+            </button>
+            <button 
+              onClick={() => setActiveTab('requests')} 
+              className={`nav-btn ${activeTab === 'requests' ? 'active' : ''}`}
+            >
+              Live Requests Queue
+            </button>
+            <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem' }}>
+              <button 
+                onClick={() => setActiveTab('profile')} 
+                className={`nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
+                style={{ width: '100%' }}
+              >
+                👤 My Profile
+              </button>
+            </div>
+          </nav>
+          <button onClick={logout} className="nav-btn" style={{ marginTop: 'auto', background: 'rgba(0,0,0,0.2)' }}>
+            Log Out
           </button>
-          <button 
-            onClick={() => setActiveTab('locations')} 
-            className={`nav-btn ${activeTab === 'locations' ? 'active' : ''}`}
-          >
-            Delivery Locations
-          </button>
-          <button 
-            onClick={() => setActiveTab('users')} 
-            className={`nav-btn ${activeTab === 'users' ? 'active' : ''}`}
-          >
-            User Verification
-          </button>
-          <button 
-            onClick={() => setActiveTab('requests')} 
-            className={`nav-btn ${activeTab === 'requests' ? 'active' : ''}`}
-          >
-            Live Requests Queue
-          </button>
-        </nav>
-      </aside>
-      <main className="main-area">
-        {activeTab === 'stats' && <DashboardStats />}
-        {activeTab === 'locations' && <LocationManager />}
-        {activeTab === 'users' && <UsersManager />}
-        {activeTab === 'requests' && <RequestsManager />}
-      </main>
-    </div>
+        </aside>
+        <main className="main-area">
+          {activeTab === 'stats' && <DashboardStats />}
+          {activeTab === 'locations' && <LocationManager />}
+          {activeTab === 'users' && <UsersManager />}
+          {activeTab === 'requests' && <RequestsManager />}
+          {activeTab === 'profile' && (
+            <div style={{ maxWidth: '800px' }}>
+              <Profile userId={user?.id || 'admin_test'} role="admin" onClose={() => setActiveTab('stats')} />
+            </div>
+          )}
+        </main>
+      </div>
+    </ToastProvider>
   );
 }

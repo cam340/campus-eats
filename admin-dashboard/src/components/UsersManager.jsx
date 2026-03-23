@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { User, Shield, UserCheck, CheckCircle, ArrowLeft, MapPin, GraduationCap, Building, Mail, BadgeCheck } from 'lucide-react';
 import { api } from '../api';
+import { useToast } from './Toast';
 
 export default function UsersManager() {
+  const toast = useToast();
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -29,9 +31,13 @@ export default function UsersManager() {
       const newPrefs = { ...prefs, is_verified: true, verification_status: 'verified' };
       try {
           await api.admin.updateUser(user.id, JSON.stringify(newPrefs));
+          toast(`User ${user.name} verified successfully!`);
           fetchUsers();
           setSelectedUser(null);
-      } catch(e) { console.error(e); }
+      } catch(e) { 
+          console.error(e);
+          toast('Failed to verify user', 'error');
+      }
   };
 
 
