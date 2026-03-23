@@ -33,11 +33,13 @@ export default function Auth({ intendedRole, onCancel, onLoginSuccess }) {
         });
       }
       
+      console.log("Signup/Login API result:", data);
       localStorage.setItem('campus_user', JSON.stringify(data));
       toast(isLogin ? `Welcome back, ${data.full_name || data.name || 'User'}! 🎉` : 'Account created successfully! Welcome aboard! 🎉', 'success');
       onLoginSuccess(data);
 
     } catch (error) {
+      console.error("Auth Component Error:", error);
       toast(error.message || 'Authentication failed. Please try again.', 'error');
     } finally {
       setLoading(false);

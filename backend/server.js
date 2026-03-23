@@ -128,13 +128,14 @@ app.post('/api/auth/signup', async (req, res) => {
     try {
         const { email, password, full_name, phone_number, hostel_name, room_number, role } = req.body;
         const id = Date.now().toString() + Math.random().toString(36).substring(7);
+        const userRole = role || 'student'; // Fallback to student
         
         await db.run(`INSERT INTO users (id, email, password, name, full_name, role, phone_number, hostel_name, room_number)
                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-                      [id, email, password, full_name, full_name, role, phone_number, hostel_name, room_number]);
+                      [id, email, password, full_name, full_name, userRole, phone_number, hostel_name, room_number]);
         
-        console.log("Signup success:", email);
-        res.json({ id, email, full_name, role });
+        console.log("Signup success:", email, "Role:", userRole);
+        res.status(201).json({ id, email, name: full_name, full_name, role: userRole });
     } catch(err) {
         console.error("Signup error:", err);
         if(err.message && err.message.includes('UNIQUE constraint failed')) {
