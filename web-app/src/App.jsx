@@ -3,6 +3,8 @@ import StudentDashboard from './components/StudentDashboard';
 import RiderDashboard from './components/RiderDashboard';
 import Chat from './components/Chat';
 import Auth from './components/Auth';
+import Profile from './components/Profile';
+import { ToastProvider } from './components/Toast';
 
 const GlobalStyles = () => (
   <style>
@@ -473,7 +475,7 @@ export default function App() {
 
   if (!sessionUser) {
     return (
-      <>
+      <ToastProvider>
         <StandardLandingPage onSelectRole={(role) => setAuthRoleSelection(role)} />
         {authRoleSelection && 
            <Auth 
@@ -485,7 +487,7 @@ export default function App() {
              }}
            />
         }
-      </>
+      </ToastProvider>
     );
   }
 
@@ -494,15 +496,23 @@ export default function App() {
 
   if (activeUserRole === 'student') {
     return (
-      <div style={{ position: 'relative', minHeight: '100vh', background: '#F9FAFB' }}>
-        <GlobalStyles />
-        <StudentDashboard userId={activeUserId} onLogout={logout} onOpenChat={handleOpenChat} />
-        {activeTab === 'chat' && (
-          <div className="chat-floating" style={{ position: 'fixed', bottom: '2rem', right: '2rem', width: '450px', zIndex: 1000, animation: 'slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
-             <Chat userId={activeUserId} role="student" requestId={chatId} onClose={() => setActiveTab('main')} />
-          </div>
-        )}
-      </div>
+      <ToastProvider>
+        <div style={{ position: 'relative', minHeight: '100vh', background: '#F9FAFB' }}>
+          <GlobalStyles />
+          {activeTab === 'profile' ? (
+            <div style={{ maxWidth: '800px', margin: '0 auto', padding: '3rem 1.5rem' }}>
+              <Profile userId={activeUserId} role="student" onClose={() => setActiveTab('main')} />
+            </div>
+          ) : (
+            <StudentDashboard userId={activeUserId} onLogout={logout} onOpenChat={handleOpenChat} onOpenProfile={() => setActiveTab('profile')} />
+          )}
+          {activeTab === 'chat' && (
+            <div className="chat-floating" style={{ position: 'fixed', bottom: '2rem', right: '2rem', width: '450px', zIndex: 1000, animation: 'slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
+               <Chat userId={activeUserId} role="student" requestId={chatId} onClose={() => setActiveTab('main')} />
+            </div>
+          )}
+        </div>
+      </ToastProvider>
     );
   }
 
@@ -532,15 +542,19 @@ export default function App() {
 
   if (activeUserRole === 'rider') {
     return (
-      <DashboardLayout title="Rider" navItems={
-        <>
-          <button onClick={() => {setChatId(null); setActiveTab('main')}} className={`nav-btn ${activeTab === 'main' ? 'active' : ''}`}>Live Deliveries</button>
-          {activeTab === 'chat' && <button className="nav-btn active">Live Chat</button>}
-        </>
-      }>
-        {activeTab === 'main' && <RiderDashboard userId={activeUserId} onOpenChat={handleOpenChat} />}
-        {activeTab === 'chat' && <Chat userId={activeUserId} role="rider" requestId={chatId} onClose={() => setActiveTab('main')} />}
-      </DashboardLayout>
+      <ToastProvider>
+        <DashboardLayout title="Rider" navItems={
+          <>
+            <button onClick={() => {setChatId(null); setActiveTab('main')}} className={`nav-btn ${activeTab === 'main' ? 'active' : ''}`}>Live Deliveries</button>
+            <button onClick={() => setActiveTab('profile')} className={`nav-btn ${activeTab === 'profile' ? 'active' : ''}`}>My Profile</button>
+            {activeTab === 'chat' && <button className="nav-btn active">Live Chat</button>}
+          </>
+        }>
+          {activeTab === 'main' && <RiderDashboard userId={activeUserId} onOpenChat={handleOpenChat} />}
+          {activeTab === 'profile' && <Profile userId={activeUserId} role="rider" onClose={() => setActiveTab('main')} />}
+          {activeTab === 'chat' && <Chat userId={activeUserId} role="rider" requestId={chatId} onClose={() => setActiveTab('main')} />}
+        </DashboardLayout>
+      </ToastProvider>
     );
   }
 }

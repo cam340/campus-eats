@@ -48,5 +48,9 @@ export const api = {
   messages: {
     getByRequest: (requestId) => client(`messages/${requestId}`),
     send: (data) => client('messages', { body: data }),
+  },
+  profile: {
+    get: (userId) => client(`profile/${userId}`),
+    update: (userId, data) => client(`profile/${userId}`, { method: 'PUT', body: data }),
   }
 };

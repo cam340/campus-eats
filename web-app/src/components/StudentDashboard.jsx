@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { api, socket } from '../api';
+import { useToast } from './Toast';
 
-export default function StudentDashboard({ userId, onLogout, onOpenChat }) {
+export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenProfile }) {
+    const toast = useToast();
     const [locations, setLocations] = useState([]);
     const [requestText, setRequestText] = useState('');
     const [locationId, setLocationId] = useState('');
@@ -40,8 +42,8 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (activeRequest) return alert("You already have an active order.");
-        if (!locationId) return alert("Please select a delivery drop-off zone.");
+        if (activeRequest) return toast('You already have an active order.', 'error');
+        if (!locationId) return toast('Please select a delivery drop-off zone.', 'info');
         
         try {
             const newReq = await api.requests.create({
@@ -53,7 +55,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat }) {
             setActiveRequest(newReq);
             setRequestText('');
         } catch (error) {
-            alert("Error submitting request: " + error.message);
+            toast('Error submitting request: ' + error.message, 'error');
         }
     };
 
@@ -89,6 +91,11 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat }) {
                             ))}
                         </select>
                     </div>
+                    {onOpenProfile && (
+                        <button onClick={onOpenProfile} style={{ background: '#004F32', color: 'white', border: 'none', padding: '0.5rem 1.5rem', borderRadius: '99px', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            👤 Profile
+                        </button>
+                    )}
                     <button onClick={onLogout} style={{ background: 'white', border: '2px solid #E5E7EB', color: '#111827', padding: '0.5rem 1.5rem', borderRadius: '99px', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={(e) => {e.currentTarget.style.background='#F9FAFB'}} onMouseOut={(e) => {e.currentTarget.style.background='white'}}>
                         Log Out
                     </button>

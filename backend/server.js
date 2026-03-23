@@ -163,6 +163,23 @@ app.post('/api/messages', async (req, res) => {
 });
 
 // ============================================
+// PROFILE API ENDPOINTS
+// ============================================
+app.get('/api/profile/:id', async (req, res) => {
+    const user = await db.get("SELECT id, email, name, full_name, role, phone_number, hostel_name, room_number, preferences FROM users WHERE id = ?", [req.params.id]);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user);
+});
+
+app.put('/api/profile/:id', async (req, res) => {
+    const { full_name, phone_number, hostel_name, room_number } = req.body;
+    await db.run(`UPDATE users SET full_name = ?, name = ?, phone_number = ?, hostel_name = ?, room_number = ? WHERE id = ?`,
+        [full_name, full_name, phone_number, hostel_name, room_number, req.params.id]);
+    const updated = await db.get("SELECT id, email, name, full_name, role, phone_number, hostel_name, room_number FROM users WHERE id = ?", [req.params.id]);
+    res.json(updated);
+});
+
+// ============================================
 // ADMIN API ENDPOINTS
 // ============================================
 app.get('/api/admin/users', async (req, res) => {
