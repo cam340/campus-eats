@@ -54,14 +54,22 @@ class Database {
         return { type: 'text', value: p.toString() };
     }
 
+    normalizeValue(v) {
+        if (v === null || v === undefined) return null;
+        if (typeof v === 'object' && v.type) {
+            if (v.type === 'null') return null;
+            if (v.type === 'integer' || v.type === 'float') return Number(v.value);
+            return v.value; // blob or text
+        }
+        return v;
+    }
+
     async get(sql, params = []) {
         if (this.isLibsql) {
             const res = await this.executeTurso(sql, params);
-            // res.rows is [ [val1, val2], ... ]
-            // res.cols is [ {name: 'id'}, ... ]
-            if (!res.rows || res.rows.length === 0) return null;
+            if (!res || !res.rows || res.rows.length === 0) return null;
             const obj = {};
-            res.cols.forEach((col, i) => obj[col.name] = res.rows[0][i]);
+            res.cols.forEach((col, i) => obj[col.name] = this.normalizeValue(res.rows[0][i]));
             return obj;
         }
         return await this.localDb.get(sql, params);
@@ -70,10 +78,10 @@ class Database {
     async all(sql, params = []) {
         if (this.isLibsql) {
             const res = await this.executeTurso(sql, params);
-            if (!res.rows) return [];
+            if (!res || !res.rows) return [];
             return res.rows.map(row => {
                 const obj = {};
-                res.cols.forEach((col, i) => obj[col.name] = row[i]);
+                res.cols.forEach((col, i) => obj[col.name] = this.normalizeValue(row[i]));
                 return obj;
             });
         }
