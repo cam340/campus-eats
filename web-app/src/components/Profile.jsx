@@ -13,7 +13,10 @@ export default function Profile({ userId, role, onClose }) {
         api.profile.get(userId).then(data => {
             setProfile(data);
             setForm(data);
-        }).catch(() => toast('Failed to load profile', 'error'));
+        }).catch((err) => {
+            console.error("Profile error:", err);
+            toast(err.message || 'Failed to load profile', 'error');
+        });
     }, [userId]);
 
     const handleSave = async () => {

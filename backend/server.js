@@ -166,6 +166,7 @@ app.post('/api/messages', async (req, res) => {
 // PROFILE API ENDPOINTS
 // ============================================
 app.get('/api/profile/:id', async (req, res) => {
+    console.log(`Profile request for ID: ${req.params.id}`);
     const user = await db.get("SELECT id, email, name, full_name, role, phone_number, hostel_name, room_number, preferences FROM users WHERE id = ?", [req.params.id]);
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json(user);
