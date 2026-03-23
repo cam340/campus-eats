@@ -390,18 +390,8 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                             onBlur={(e) => {e.target.style.background='#F9FAFB'; e.target.style.borderColor='#F3F4F6'}}
                         ></textarea>
 
-                        <div className="food-tags" style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
-                            {['🍛 Jollof', '🍗 Fried Rice', '🥤 Cold Drinks', '🍔 Snacks', '🥘 Swallow'].map(tag => (
-                                <button 
-                                    type="button" 
-                                    key={tag}
-                                    onClick={() => setRequestText(prev => prev ? `${prev}, ${tag}` : tag)}
-                                    style={{ background: '#F3F4F6', border: 'none', padding: '0.75rem 1.25rem', borderRadius: '99px', fontWeight: 700, color: '#4B5563', cursor: 'pointer', transition: 'all 0.2s', fontSize: '1rem' }}
-                                >
-                                    + {tag}
-                                </button>
-                            ))}
-                        </div>
+
+
 
                         <div className="form-footer" style={{ marginTop: '2.5rem', padding: '2rem', background: '#F9FAFB', borderRadius: '24px', border: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div>
