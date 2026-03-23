@@ -140,7 +140,6 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                                 >
                                     <option value="New Cafeteria">New Cafeteria</option>
                                     <option value="Old Cafeteria">Old Cafeteria</option>
-                                    <option value="Buttery">Buttery</option>
                                 </select>
                             </div>
                             <div style={{ flex: 1, minWidth: '200px' }}>
