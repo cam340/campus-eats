@@ -48,8 +48,10 @@ class Database {
     }
 
     formatParam(p) {
-        if (typeof p === 'boolean') return p ? 1 : 0;
-        return p;
+        if (p === null || p === undefined) return { type: 'null' };
+        if (typeof p === 'number') return { type: 'integer', value: p.toString() };
+        if (typeof p === 'boolean') return { type: 'integer', value: p ? '1' : '0' };
+        return { type: 'text', value: p.toString() };
     }
 
     async get(sql, params = []) {
