@@ -10,7 +10,9 @@ export default function Profile({ userId, role, onClose }) {
     const toast = useToast();
 
     useEffect(() => {
+        console.log("Profile Component Mount - UserID:", userId, "Role Prop:", role);
         api.profile.get(userId).then(data => {
+            console.log("Profile Data Loaded:", data);
             setProfile(data);
             setForm(data);
         }).catch((err) => {
@@ -175,7 +177,7 @@ export default function Profile({ userId, role, onClose }) {
             </div>
 
             {/* IDENTITY VERIFICATION (Riders Only) */}
-            {role === 'rider' && (
+            {role?.toLowerCase() === 'rider' && (
                 <div style={{
                     marginTop: '2.5rem', background: '#F0FDF4', padding: '2.5rem',
                     borderRadius: '24px', border: '2px dashed #10B981',
