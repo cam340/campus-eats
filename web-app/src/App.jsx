@@ -4,6 +4,7 @@ import RiderDashboard from './components/RiderDashboard';
 import Chat from './components/Chat';
 import Auth from './components/Auth';
 import Profile from './components/Profile';
+import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './components/Toast';
 
 const GlobalStyles = () => (
@@ -504,7 +505,9 @@ export default function App() {
               <Profile userId={activeUserId} role="student" onClose={() => setActiveTab('main')} />
             </div>
           ) : (
-            <StudentDashboard userId={activeUserId} onLogout={logout} onOpenChat={handleOpenChat} onOpenProfile={() => setActiveTab('profile')} />
+            <ErrorBoundary>
+              <StudentDashboard userId={activeUserId} onLogout={logout} onOpenChat={handleOpenChat} onOpenProfile={() => setActiveTab('profile')} />
+            </ErrorBoundary>
           )}
           {activeTab === 'chat' && (
             <div className="chat-floating" style={{ position: 'fixed', bottom: '2rem', right: '2rem', width: '450px', zIndex: 1000, animation: 'slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
@@ -550,7 +553,7 @@ export default function App() {
             {activeTab === 'chat' && <button className="nav-btn active">Live Chat</button>}
           </>
         }>
-          {activeTab === 'main' && <RiderDashboard userId={activeUserId} onOpenChat={handleOpenChat} />}
+          {activeTab === 'main' && <ErrorBoundary><RiderDashboard userId={activeUserId} onOpenChat={handleOpenChat} /></ErrorBoundary>}
           {activeTab === 'profile' && <Profile userId={activeUserId} role="rider" onClose={() => setActiveTab('main')} />}
           {activeTab === 'chat' && <Chat userId={activeUserId} role="rider" requestId={chatId} onClose={() => setActiveTab('main')} />}
         </DashboardLayout>

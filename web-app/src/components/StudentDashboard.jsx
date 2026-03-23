@@ -11,15 +11,21 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
     const [activeRequest, setActiveRequest] = useState(null);
 
     useEffect(() => {
+        console.log("StudentDashboard mounted for user:", userId);
         const fetchInitial = async () => {
             try {
+                console.log("Fetching locations...");
                 const locs = await api.locations.getAll();
-                setLocations(locs);
+                console.log("Locations fetched:", locs?.length);
+                setLocations(locs || []);
 
+                console.log("Fetching active request for student:", userId);
                 const reqs = await api.requests.getStudentActive(userId);
+                console.log("Active requests found:", reqs?.length);
                 if (reqs && reqs.length > 0) setActiveRequest(reqs[0]);
             } catch (err) {
                 console.error("Failed to fetch initial data:", err);
+                toast("Connection error. Please refresh.", "error");
             }
         };
         fetchInitial();
