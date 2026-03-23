@@ -13,6 +13,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
     const [activeRequest, setActiveRequest] = useState(null);
     const [history, setHistory] = useState([]);
     const [showHistory, setShowHistory] = useState(false);
+    const [showMenu, setShowMenu] = useState(false);
 
     useEffect(() => {
         console.log("StudentDashboard mounted for user:", userId);
@@ -89,10 +90,10 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
             <style>
                 {`
                 @media (max-width: 600px) {
-                    .student-top-header { padding: 1rem 4% !important; flex-wrap: wrap; gap: 0.75rem !important; }
+                    .student-top-header { padding: 1rem 4% !important; }
                     .student-top-header > div:first-child { font-size: 1.35rem !important; }
-                    .student-header-actions { flex-wrap: wrap !important; gap: 0.5rem !important; }
-                    .student-header-actions > * { font-size: 0.85rem !important; padding: 0.4rem 0.75rem !important; }
+                    .student-header-actions { gap: 0.75rem !important; }
+                    .student-header-actions > * { font-size: 0.85rem !important; }
                     .student-history-container { padding: 2rem 4% !important; }
                     .student-history-head { flex-direction: column !important; align-items: flex-start !important; gap: 1rem !important; }
                     .student-history-head h2 { font-size: 2rem !important; }
@@ -100,6 +101,11 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                     .student-history-card { flex-direction: column !important; align-items: flex-start !important; gap: 1.25rem !important; padding: 1.5rem !important; border-radius: 24px !important; }
                     .student-history-card-left { gap: 1.25rem !important; }
                     .student-history-card-right { width: 100%; display: flex; align-items: center; justify-content: space-between; text-align: left !important; }
+                    .student-menu-dropdown { right: 4% !important; top: 60px !important; }
+                }
+                @keyframes menuSlideIn {
+                    from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+                    to { opacity: 1; transform: translateY(0) scale(1); }
                 }
                 `}
             </style>
@@ -108,7 +114,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                     <div style={{ width: '32px', height: '32px', backgroundColor: '#10B981', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#004F32', fontSize: '1.2rem' }}>✦</div>
                     CampusEats
                 </div>
-                <div className="student-header-actions" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                <div className="student-header-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#F3F4F6', padding: '0.5rem 1rem', borderRadius: '99px', fontSize: '1rem', fontWeight: 800 }}>
                         📍 
                         <select 
@@ -122,17 +128,37 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
                             ))}
                         </select>
                     </div>
-                    <button onClick={() => setShowHistory(true)} style={{ background: 'white', color: '#111827', border: '2px solid #E5E7EB', padding: '0.5rem 1.5rem', borderRadius: '99px', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.5rem' }} onMouseOver={(e) => e.currentTarget.style.borderColor = '#10B981'} onMouseOut={(e) => e.currentTarget.style.borderColor = '#E5E7EB'}>
-                        📜 History
-                    </button>
-                    {onOpenProfile && (
-                        <button onClick={onOpenProfile} style={{ background: '#004F32', color: 'white', border: 'none', padding: '0.5rem 1.5rem', borderRadius: '99px', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            👤 Profile
+                    <div style={{ position: 'relative' }}>
+                        <button 
+                            onClick={() => setShowMenu(!showMenu)} 
+                            style={{ background: showMenu ? '#004F32' : 'white', color: showMenu ? 'white' : '#111827', border: '2px solid #E5E7EB', padding: '0.5rem 1rem', borderRadius: '14px', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem' }}
+                        >
+                            <span style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                                <span style={{ width: '18px', height: '2.5px', background: showMenu ? 'white' : '#111827', borderRadius: '2px', transition: 'all 0.2s' }}></span>
+                                <span style={{ width: '14px', height: '2.5px', background: showMenu ? 'white' : '#111827', borderRadius: '2px', transition: 'all 0.2s' }}></span>
+                                <span style={{ width: '18px', height: '2.5px', background: showMenu ? 'white' : '#111827', borderRadius: '2px', transition: 'all 0.2s' }}></span>
+                            </span>
+                            Menu
                         </button>
-                    )}
-                    <button onClick={onLogout} style={{ background: 'white', border: '2px solid #E5E7EB', color: '#111827', padding: '0.5rem 1.5rem', borderRadius: '99px', fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s' }} onMouseOver={(e) => {e.currentTarget.style.background='#F9FAFB'}} onMouseOut={(e) => {e.currentTarget.style.background='white'}}>
-                        Log Out
-                    </button>
+                        {showMenu && (
+                            <>
+                                <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 98 }} />
+                                <div className="student-menu-dropdown" style={{ position: 'absolute', right: 0, top: 'calc(100% + 12px)', background: 'white', borderRadius: '20px', boxShadow: '0 20px 50px -10px rgba(0,0,0,0.15)', border: '1px solid rgba(0,0,0,0.06)', minWidth: '220px', zIndex: 99, overflow: 'hidden', animation: 'menuSlideIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards' }}>
+                                    <button onClick={() => { setShowHistory(true); setShowMenu(false); }} style={{ width: '100%', background: 'none', border: 'none', padding: '1.1rem 1.5rem', textAlign: 'left', cursor: 'pointer', fontWeight: 700, fontSize: '1.05rem', color: '#111827', display: 'flex', alignItems: 'center', gap: '0.75rem', transition: 'background 0.15s', fontFamily: 'inherit' }} onMouseOver={e => e.currentTarget.style.background='#F9FAFB'} onMouseOut={e => e.currentTarget.style.background='none'}>
+                                        📜 Order History
+                                    </button>
+                                    {onOpenProfile && (
+                                        <button onClick={() => { onOpenProfile(); setShowMenu(false); }} style={{ width: '100%', background: 'none', border: 'none', borderTop: '1px solid #F3F4F6', padding: '1.1rem 1.5rem', textAlign: 'left', cursor: 'pointer', fontWeight: 700, fontSize: '1.05rem', color: '#111827', display: 'flex', alignItems: 'center', gap: '0.75rem', transition: 'background 0.15s', fontFamily: 'inherit' }} onMouseOver={e => e.currentTarget.style.background='#F9FAFB'} onMouseOut={e => e.currentTarget.style.background='none'}>
+                                            👤 My Profile
+                                        </button>
+                                    )}
+                                    <button onClick={() => { onLogout(); setShowMenu(false); }} style={{ width: '100%', background: 'none', border: 'none', borderTop: '1px solid #F3F4F6', padding: '1.1rem 1.5rem', textAlign: 'left', cursor: 'pointer', fontWeight: 700, fontSize: '1.05rem', color: '#EF4444', display: 'flex', alignItems: 'center', gap: '0.75rem', transition: 'background 0.15s', fontFamily: 'inherit' }} onMouseOver={e => e.currentTarget.style.background='#FEF2F2'} onMouseOut={e => e.currentTarget.style.background='none'}>
+                                        🚪 Log Out
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
             </header>
             
