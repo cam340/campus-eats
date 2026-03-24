@@ -152,7 +152,7 @@ export default function StudentDashboard({ userId, onLogout, onOpenChat, onOpenP
             </style>
             <header className="student-top-header" style={{ backgroundColor: 'white', padding: '1.25rem 5%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid #E5E7EB' }}>
                 <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#004F32', letterSpacing: '-1.5px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <div style={{ width: '32px', height: '32px', backgroundColor: '#10B981', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#004F32', fontSize: '1.2rem' }}>✦</div>
+                    <img src="/logo.png" alt="CampusEats" style={{ height: '36px', objectFit: 'contain' }} />
                     CampusEats
                 </div>
                 <div className="student-header-actions" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>

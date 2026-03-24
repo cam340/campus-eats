@@ -370,7 +370,7 @@ function StandardLandingPage({ onSelectRole }) {
        {/* NAV */}
        <header style={{ padding: '1.25rem 5%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 100, backgroundColor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(10px)', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
           <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#004F32', letterSpacing: '-1.5px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ width: '32px', height: '32px', backgroundColor: '#10B981', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#004F32', fontSize: '1.2rem' }}>✦</div>
+            <img src="/logo.png" alt="CampusEats" style={{ height: '36px', objectFit: 'contain' }} />
             CampusEats
           </div>
           <nav className="landing-nav-links" style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
@@ -510,7 +510,7 @@ function StandardLandingPage({ onSelectRole }) {
           {/* FOOTER */}
           <footer style={{ padding: '3rem 5%', backgroundColor: '#111827', textAlign: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <div style={{ width: '24px', height: '24px', backgroundColor: '#10B981', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#004F32', fontSize: '0.8rem', fontWeight: 900 }}>✦</div>
+              <img src="/logo.png" alt="CampusEats" style={{ height: '28px', objectFit: 'contain' }} />
               <span style={{ color: 'white', fontWeight: 900, fontSize: '1.25rem', letterSpacing: '-1px' }}>CampusEats</span>
             </div>
             <p style={{ color: '#6B7280', fontSize: '0.95rem', fontWeight: 500, margin: 0 }}>
@@ -622,7 +622,7 @@ export default function App() {
       <GlobalStyles />
       <aside className="sidebar">
         <div>
-          <h2 className="sidebar-title" style={{cursor: 'pointer'}}>CampusEats</h2>
+          <h2 className="sidebar-title" style={{cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem'}}><img src="/logo.png" alt="CampusEats" style={{ height: '32px', objectFit: 'contain' }} />CampusEats</h2>
           <p style={{color:'#9CA3AF', marginTop:'0.75rem', marginBottom:'0', fontWeight:'800', fontSize:'0.85rem', textTransform: 'uppercase', letterSpacing: '1.5px'}}>{title} PORTAL</p>
         </div>
         <nav className="sidebar-nav">
